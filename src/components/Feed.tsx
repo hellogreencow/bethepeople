@@ -1,26 +1,24 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { mockEvents } from '../data/mockData';
+import { mockEvents, VolunteerEvent } from '../data/mockData';
 import { quickSearch, searchByUserInterests } from '../services/opportunityAggregator';
-import { searchVolunteerConnectorOpportunities } from '../services/volunteerConnectorService';
-import { searchIdealistVolunteerOpportunities } from '../services/idealistService';
 import { calculateDistance } from '../services/locationService';
 import Navigation from './Navigation';
 import SwipeInterface from './SwipeInterface';
 import AIChat from './AIChat';
-import { Calendar, MapPin, Users, Heart, RefreshCw, Sparkles, List, MessageCircle, Bot, X, Check, Clock, Mail, Phone, User } from 'lucide-react';
+import { Calendar, MapPin, Users, Heart, RefreshCw, Sparkles, List, MessageCircle, X, Check, Clock, Mail, Phone, User, Zap, Trophy, Target, TrendingUp } from 'lucide-react';
 
 const Feed: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, updateStats, incrementStreak } = useUser();
   const [selectedEvent, setSelectedEvent] = useState<VolunteerEvent | null>(null);
-  const [realOpportunities, setRealOpportunities] = useState<any[]>([]);
+  const [realOpportunities, setRealOpportunities] = useState<VolunteerEvent[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(false);
   const [viewMode, setViewMode] = useState<'swipe' | 'grid'>('swipe');
-  const [dataSource, setDataSource] = useState<'places' | 'sample'>('sample');
-  const [searchRadius, setSearchRadius] = useState(25); // miles
+  const [dataSource, setDataSource] = useState<'real' | 'sample'>('sample');
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [showAchievement, setShowAchievement] = useState<string | null>(null);
 
   // Auto-load real opportunities when component mounts
   useEffect(() => {
@@ -35,11 +33,13 @@ const Feed: React.FC = () => {
             interests: user.preferences.interests,
             availability: user.preferences.availability,
             contributionTypes: user.preferences.contributionType,
-            radius: searchRadius
+            radius: 25
           });
           console.log('✅ Auto-loaded opportunities:', opportunities.length);
           setRealOpportunities(opportunities);
-          setDataSource('places');
+          if (opportunities.length > 0) {
+            setDataSource('real');
+          }
         } catch (error) {
           console.error('❌ Failed to auto-load opportunities:', error);
         } finally {
@@ -50,11 +50,27 @@ const Feed: React.FC = () => {
 
     if (user) {
       autoLoadRealOpportunities();
+      incrementStreak(); // Update streak on app open
     }
-  }, [user?.preferences.location, user?.coordinates, user?.preferences.interests, user?.preferences.availability, user?.preferences.contributionType, searchRadius, realOpportunities.length]);
+  }, [user?.preferences.location, user?.coordinates, user?.preferences.interests, realOpportunities.length]);
+
+  // Check for new achievements and show notifications
+  useEffect(() => {
+    if (user?.achievements) {
+      const recentlyUnlocked = user.achievements.find(
+        achievement => achievement.unlockedAt && 
+        Date.now() - achievement.unlockedAt.getTime() < 5000 // Within last 5 seconds
+      );
+      
+      if (recentlyUnlocked && !showAchievement) {
+        setShowAchievement(recentlyUnlocked.id);
+        setTimeout(() => setShowAchievement(null), 4000);
+      }
+    }
+  }, [user?.achievements]);
 
   const loadRealOpportunities = async () => {
-    console.log('🎯 Loading quick opportunities...');
+    console.log('🎯 Loading real opportunities...');
     setIsLoadingReal(true);
     try {
       const opportunities = await quickSearch({
@@ -63,31 +79,26 @@ const Feed: React.FC = () => {
         interests: user?.preferences.interests || [],
         availability: user?.preferences.availability || '',
         contributionTypes: user?.preferences.contributionType || [],
-        radius: searchRadius
+        radius: 25
       });
-      console.log('⚡ Quick search results:', opportunities.length);
+      console.log('⚡ Real opportunities found:', opportunities.length);
       setRealOpportunities(opportunities);
-      setDataSource('places');
+      setDataSource('real');
       
       if (opportunities.length === 0) {
-        alert(`No opportunities found within ${searchRadius} miles. Try expanding your search radius or check back later.`);
+        alert('No real opportunities found in your area. Showing sample opportunities instead.');
+        setDataSource('sample');
       }
     } catch (error) {
-      console.error('❌ Quick search failed:', error);
-      alert('Search temporarily unavailable. Please try again in a few moments.');
+      console.error('❌ Real search failed:', error);
+      alert('Unable to load real opportunities. Please check your connection.');
     } finally {
       setIsLoadingReal(false);
     }
   };
 
   const getCurrentOpportunities = () => {
-    switch (dataSource) {
-      case 'places':
-        return realOpportunities;
-      case 'sample':
-      default:
-        return mockEvents;
-    }
+    return dataSource === 'real' ? realOpportunities : mockEvents;
   };
 
   const filteredEvents = useMemo(() => {
@@ -130,54 +141,135 @@ const Feed: React.FC = () => {
     return events;
   }, [user, dataSource, realOpportunities]);
 
-  const handleMatch = (event: any) => {
-    console.log('User matched with:', event.title);
-    // Could add to user's interested events
-  };
-
-  const handleSkip = (event: any) => {
-    console.log('User skipped:', event.title);
-    // Could track skipped events to improve recommendations
-  };
-
-  const getDataSourceLabel = () => {
-    switch (dataSource) {
-      case 'places':
-        return '🎯 Real Organizations';
-      case 'sample':
-        return '✨ Sample';
-      default:
-        return 'Opportunities';
+  const handleMatch = (event: VolunteerEvent) => {
+    console.log('💚 User matched with:', event.title);
+    if (user) {
+      updateStats({
+        ...user.stats,
+        points: user.stats.points + 10,
+        matches: user.stats.matches + 1,
+        totalSwipes: user.stats.totalSwipes + 1
+      });
     }
   };
 
+  const handleSkip = (event: VolunteerEvent) => {
+    console.log('👎 User skipped:', event.title);
+    if (user) {
+      updateStats({
+        ...user.stats,
+        points: user.stats.points + 1,
+        totalSwipes: user.stats.totalSwipes + 1
+      });
+    }
+  };
+
+  // Achievement notification component
+  const AchievementNotification = () => {
+    if (!showAchievement) return null;
+    
+    const achievement = user?.achievements.find(a => a.id === showAchievement);
+    if (!achievement) return null;
+
+    return (
+      <div className="fixed top-20 right-4 z-50 bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-xl shadow-2xl animate-bounce border-2 border-white">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{achievement.icon}</span>
+          <div>
+            <h3 className="font-bold">Achievement Unlocked!</h3>
+            <p className="text-sm">{achievement.title}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Navigation />
+      <AchievementNotification />
       
       <div className="container mx-auto px-4 py-6">
-        {/* Simple Header */}
+        {/* Enhanced Header with Gamification */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {user ? `Hey ${user.name}! 👋` : 'Volunteer Opportunities'}
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {user ? `Hey ${user.name}! 🔥` : 'Volunteer Opportunities'}
+            </h1>
+          </div>
+          
+          {/* Enhanced Gamification Stats */}
+          {user && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 max-w-2xl mx-auto">
+              <div className="bg-gradient-to-br from-orange-100 to-red-100 rounded-xl p-4 border border-orange-200 shadow-sm">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-2xl">🔥</span>
+                  <span className="text-2xl font-bold text-orange-600">{user.stats.streak}</span>
+                </div>
+                <p className="text-xs text-gray-600 font-medium">Day Streak</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl p-4 border border-blue-200 shadow-sm">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-2xl">⚡</span>
+                  <span className="text-2xl font-bold text-blue-600">{user.stats.points}</span>
+                </div>
+                <p className="text-xs text-gray-600 font-medium">Points</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-4 border border-green-200 shadow-sm">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-2xl">💚</span>
+                  <span className="text-2xl font-bold text-green-600">{user.stats.matches}</span>
+                </div>
+                <p className="text-xs text-gray-600 font-medium">Matches</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-4 border border-purple-200 shadow-sm">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-2xl">🏆</span>
+                  <span className="text-2xl font-bold text-purple-600">{user.stats.level}</span>
+                </div>
+                <p className="text-xs text-gray-600 font-medium">Level</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Level Progress Bar */}
+          {user && (
+            <div className="max-w-md mx-auto mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-600">Level {user.stats.level}</span>
+                <span className="text-sm text-gray-500">
+                  {user.stats.points % 500}/500 to Level {user.stats.level + 1}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-1000"
+                  style={{ width: `${(user.stats.points % 500) / 500 * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+          
           <p className="text-gray-600">
-            {dataSource === 'places' && realOpportunities.length > 0
-                ? `Real organizations near ${user?.preferences.location}`
-                : 'Discover ways to make a difference'
+            {dataSource === 'real' && realOpportunities.length > 0
+                ? `Real opportunities near ${user?.preferences.location} 📍`
+                : 'Discover your next adventure'
             }
           </p>
         </div>
 
-        {/* Simple Controls */}
+        {/* Simplified Controls */}
         <div className="flex flex-col items-center space-y-4 mb-6">
           {/* View Mode Toggle */}
-          <div className="flex bg-white rounded-full p-1 shadow-sm border-2 border-electric-blue">
+          <div className="flex bg-white rounded-full p-1 shadow-lg border-2 border-gradient">
             <button
               onClick={() => setViewMode('swipe')}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
+              className={`px-6 py-3 rounded-full font-medium transition-all ${
                 viewMode === 'swipe'
-                  ? 'bg-electric-blue text-white shadow-sm'
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -185,160 +277,67 @@ const Feed: React.FC = () => {
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
+              className={`px-6 py-3 rounded-full font-medium transition-all ${
                 viewMode === 'grid'
-                  ? 'bg-electric-blue text-white shadow-sm'
+                  ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <List className="h-4 w-4 inline mr-1" />
-              List
+              Browse
             </button>
           </div>
 
-          {/* Data Source Buttons */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {/* Real Organizations - Primary Option */}
+          {/* Simplified Data Source Toggle */}
+          <div className="flex gap-3">
             <button
               onClick={() => {
                 if (realOpportunities.length > 0) {
-                  setDataSource('places');
+                  setDataSource('real');
                 } else {
                   loadRealOpportunities();
                 }
               }}
               disabled={isLoadingReal}
-              className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
-                dataSource === 'places' && realOpportunities.length > 0
-                  ? 'bg-green-600 text-white shadow-lg'
-                  : 'bg-white text-green-600 border-2 border-green-600 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed'
+              className={`px-6 py-3 rounded-full font-medium transition-all flex items-center gap-2 shadow-lg ${
+                dataSource === 'real' && realOpportunities.length > 0
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                  : 'bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 disabled:opacity-50'
               }`}
             >
               {isLoadingReal ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin" />
-                  Loading...
+                  Finding...
                 </>
               ) : (
                 <>
-                  ⚡
-                  {realOpportunities.length > 0 ? 'Real Opportunities' : 'Load Real Opportunities'}
+                  <Zap className="h-4 w-4" />
+                  {realOpportunities.length > 0 ? 'Real Opportunities' : 'Find Real Opportunities'}
                 </>
               )}
             </button>
 
-            {/* VolunteerConnector API - NEW */}
-            <button
-              onClick={async () => {
-                setIsLoadingReal(true);
-                try {
-                  console.log('🚀 Loading VolunteerConnector opportunities...');
-                  const opportunities = await searchVolunteerConnectorOpportunities({
-                    regions: ['British Columbia', 'Alberta', 'Ontario'],
-                    limit: 25
-                  });
-                  console.log('✅ VolunteerConnector loaded:', opportunities.length);
-                  setRealOpportunities(opportunities);
-                  setDataSource('places');
-                  
-                  if (opportunities.length === 0) {
-                    alert('No opportunities found from VolunteerConnector. Try the other sources.');
-                  }
-                } catch (error) {
-                  console.error('❌ VolunteerConnector failed:', error);
-                  alert('VolunteerConnector temporarily unavailable. Try other sources.');
-                } finally {
-                  setIsLoadingReal(false);
-                }
-              }}
-              disabled={isLoadingReal}
-              className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
-                isLoadingReal
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50'
-              }`}
-            >
-              {isLoadingReal ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  🇨🇦
-                  VolunteerConnector
-                </>
-              )}
-            </button>
-
-            {/* Idealist US API - Real US Volunteer Opportunities */}
-            <button
-              onClick={async () => {
-                setIsLoadingReal(true);
-                try {
-                  console.log('🇺🇸 Loading Idealist US volunteer opportunities...');
-                  const opportunities = await searchIdealistVolunteerOpportunities(
-                    user?.preferences.location || 'United States',
-                    user?.preferences.interests || [],
-                    25
-                  );
-                  console.log('✅ Idealist US loaded:', opportunities.length);
-                  setRealOpportunities(opportunities);
-                  setDataSource('places');
-                  
-                  if (opportunities.length === 0) {
-                    alert('No opportunities found from Idealist US. Try the other sources.');
-                  }
-                } catch (error) {
-                  console.error('❌ Idealist US failed:', error);
-                  alert('Idealist US temporarily unavailable. Try other sources.');
-                } finally {
-                  setIsLoadingReal(false);
-                }
-              }}
-              disabled={isLoadingReal}
-              className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
-                isLoadingReal
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-white text-purple-600 border-2 border-purple-600 hover:bg-purple-50'
-              }`}
-            >
-              {isLoadingReal ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  🇺🇸
-                  Idealist US
-                </>
-              )}
-            </button>
-
-            {/* AI Chat Assistant - New Feature */}
-
-            {/* Sample Opportunities */}
             <button
               onClick={() => setDataSource('sample')}
-              className={`px-4 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
+              className={`px-6 py-3 rounded-full font-medium transition-all flex items-center gap-2 shadow-lg ${
                 dataSource === 'sample'
-                  ? 'bg-electric-red text-white shadow-lg'
-                  : 'bg-white text-electric-red border-2 border-electric-red hover:bg-red-50'
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                  : 'bg-white text-purple-600 border-2 border-purple-500 hover:bg-purple-50'
               }`}
             >
-              <Heart className="h-4 w-4" />
-              Sample
+              <Sparkles className="h-4 w-4" />
+              Sample Opportunities
             </button>
           </div>
 
           {/* Status Info */}
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white rounded-full text-sm text-gray-600 border">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-sm text-gray-600 border shadow-sm">
               <span className="font-medium">
-                {dataSource === 'places' && realOpportunities.length > 0 
-                  ? '🇨🇦 Canadian Opportunities' 
-                  : getDataSourceLabel()
+                {dataSource === 'real' && realOpportunities.length > 0 
+                  ? '🎯 Real Organizations' 
+                  : '✨ Sample Data'
                 }
               </span>
               <span>•</span>
@@ -347,37 +346,15 @@ const Feed: React.FC = () => {
                 <>
                   <span>•</span>
                   <span>📍 {user.preferences.location}</span>
-                  <span>•</span>
-                  <span>🎯 {searchRadius} miles</span>
                 </>
               )}
-            </div>
-            
-            {/* Radius Control */}
-            <div className="mt-3 flex items-center justify-center gap-3">
-              <span className="text-sm text-gray-600">Search radius:</span>
-              <div className="flex gap-2">
-                {[10, 25, 50].map(radius => (
-                  <button
-                    key={radius}
-                    onClick={() => setSearchRadius(radius)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                      searchRadius === radius
-                        ? 'bg-electric-blue text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {radius} mi
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>
 
         {/* Content */}
         {viewMode === 'swipe' ? (
-          <div className="h-[calc(100vh-300px)] md:h-[600px]">
+          <div className="h-[calc(100vh-400px)] md:h-[600px]">
             <SwipeInterface
               events={filteredEvents}
               onMatch={handleMatch}
@@ -390,7 +367,7 @@ const Feed: React.FC = () => {
             {filteredEvents.map((event) => (
               <div
                 key={event.id}
-                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden border hover:border-electric-blue group"
+                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all cursor-pointer overflow-hidden border hover:border-purple-300 group transform hover:-translate-y-1"
                 onClick={() => setSelectedEvent(event)}
               >
                 <div className="relative">
@@ -400,7 +377,7 @@ const Feed: React.FC = () => {
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-3 left-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${
                       event.type === 'virtual' ? 'bg-blue-500' :
                       event.type === 'hybrid' ? 'bg-purple-500' :
                       'bg-green-500'
@@ -417,13 +394,13 @@ const Feed: React.FC = () => {
 
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-electric-blue transition-colors leading-tight flex-1 pr-2">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors leading-tight flex-1 pr-2">
                       {event.title}
                     </h3>
                     <Heart className="h-5 w-5 text-gray-300 hover:text-red-500 transition-colors flex-shrink-0 ml-2" />
                   </div>
 
-                  <p className="text-electric-blue font-medium mb-2 text-sm">{event.organization}</p>
+                  <p className="text-purple-600 font-medium mb-2 text-sm">{event.organization}</p>
                   <p className="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-3">
                     {event.description.length > 120 
                       ? `${event.description.substring(0, 120)}...` 
@@ -471,11 +448,11 @@ const Feed: React.FC = () => {
                   <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No opportunities found</h3>
                   <p className="text-gray-600 mb-4">
-                    Try loading real organizations or use the AI assistant to find perfect matches.
+                    Try loading real opportunities or use the AI assistant to find perfect matches.
                   </p>
                   <button
                     onClick={() => setIsAIChatOpen(true)}
-                    className="bg-electric-blue text-white px-6 py-2 rounded-full hover:bg-electric-blue-dark transition-colors"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all"
                   >
                     Ask AI Assistant
                   </button>
@@ -485,7 +462,7 @@ const Feed: React.FC = () => {
           </div>
         )}
 
-        {/* Event Detail Modal */}
+        {/* Event Detail Modal - Enhanced with gamification */}
         {selectedEvent && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -530,7 +507,7 @@ const Feed: React.FC = () => {
                   <div className="lg:col-span-2">
                     <div className="mb-6">
                       <h1 className="text-3xl font-bold text-gray-900 mb-2">{selectedEvent.title}</h1>
-                      <p className="text-xl text-electric-blue font-semibold">{selectedEvent.organization}</p>
+                      <p className="text-xl text-purple-600 font-semibold">{selectedEvent.organization}</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -614,71 +591,12 @@ const Feed: React.FC = () => {
                         </div>
                       </div>
                     )}
-
-                    {/* API-specific additional details */}
-                    {(selectedEvent as any).activities && (selectedEvent as any).activities.length > 0 && (
-                      <div className="mb-6">
-                        <h4 className="font-semibold text-gray-900 mb-3">Activities</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {(selectedEvent as any).activities.map((activity: any, index: number) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                            >
-                              {activity.name}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {(selectedEvent as any).duration && (
-                      <div className="mb-6">
-                        <h4 className="font-semibold text-gray-900 mb-3">Time Commitment</h4>
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <div className="flex items-center text-blue-800">
-                            <Clock className="h-5 w-5 mr-2" />
-                            <span className="font-medium">{(selectedEvent as any).duration}</span>
-                          </div>
-                          <p className="text-blue-700 text-sm mt-1">
-                            Duration: {selectedEvent.commitment}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {(selectedEvent as any).source && (
-                      <div className="mb-6">
-                        <h4 className="font-semibold text-gray-900 mb-3">Source</h4>
-                        <div className="bg-gray-50 rounded-lg p-4">
-                          <div className="flex items-center text-gray-700">
-                            <span className="font-medium">
-                              {(selectedEvent as any).source === 'volunteer_connector' && '🇨🇦 VolunteerConnector'}
-                              {(selectedEvent as any).source === 'idealist_us' && '🇺🇸 Idealist'}
-                              {(selectedEvent as any).source === 'google_places' && '📍 Google Places'}
-                              {(selectedEvent as any).source === 'ai_perplexity' && '🤖 AI Generated'}
-                              {!(selectedEvent as any).source && '✨ Sample Data'}
-                            </span>
-                          </div>
-                          {(selectedEvent as any).url && (
-                            <a
-                              href={(selectedEvent as any).url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-electric-blue hover:text-electric-blue-dark text-sm mt-2 inline-block"
-                            >
-                              View original listing →
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Sidebar */}
+                  {/* Enhanced Sidebar with Gamification */}
                   <div className="space-y-6">
-                    {/* RSVP Card */}
-                    <div className="bg-gray-50 rounded-xl p-6">
+                    {/* RSVP Card with Points Preview */}
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-2xl font-bold text-gray-900">
@@ -695,9 +613,17 @@ const Feed: React.FC = () => {
                         </div>
                         
                         {selectedEvent.spotsAvailable > 0 ? (
-                          <p className="text-gray-600">
-                            {selectedEvent.spotsAvailable} {selectedEvent.spotsAvailable === 1 ? 'spot' : 'spots'} remaining
-                          </p>
+                          <>
+                            <p className="text-gray-600 mb-3">
+                              {selectedEvent.spotsAvailable} {selectedEvent.spotsAvailable === 1 ? 'spot' : 'spots'} remaining
+                            </p>
+                            <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-3 mb-3">
+                              <div className="flex items-center gap-2 text-sm text-green-700">
+                                <Zap className="h-4 w-4" />
+                                <span className="font-medium">+50 points for RSVP!</span>
+                              </div>
+                            </div>
+                          </>
                         ) : (
                           <p className="text-red-600">This opportunity is currently full</p>
                         )}
@@ -710,39 +636,18 @@ const Feed: React.FC = () => {
                               navigate('/onboarding');
                               return;
                             }
-                            // Handle RSVP logic here
                             alert(`RSVP'd for ${selectedEvent.title}!`);
+                            updateStats({
+                              ...user.stats,
+                              points: user.stats.points + 50,
+                              eventsAttended: user.stats.eventsAttended + 1
+                            });
                           }}
-                          className="w-full py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 bg-green-600 text-white hover:bg-green-700"
+                          className="w-full py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg transform hover:scale-105"
                         >
                           <Check className="h-5 w-5" />
                           RSVP Now
                         </button>
-                      )}
-
-                      {/* Show original application method if available */}
-                      {((selectedEvent as any).applyEmail || (selectedEvent as any).applyUrl) && (
-                        <div className="mt-4 pt-4 border-t border-gray-200">
-                          <h5 className="font-medium text-gray-900 mb-2">How to Apply</h5>
-                          {(selectedEvent as any).applyEmail && (
-                            <a
-                              href={`mailto:${(selectedEvent as any).applyEmail}`}
-                              className="block w-full py-2 px-4 bg-electric-blue text-white rounded-lg hover:bg-electric-blue-dark transition-colors text-center text-sm mb-2"
-                            >
-                              Email Application
-                            </a>
-                          )}
-                          {(selectedEvent as any).applyUrl && (
-                            <a
-                              href={(selectedEvent as any).applyUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="block w-full py-2 px-4 bg-electric-red text-white rounded-lg hover:bg-electric-red-dark transition-colors text-center text-sm"
-                            >
-                              Apply Online
-                            </a>
-                          )}
-                        </div>
                       )}
                     </div>
 
@@ -777,42 +682,6 @@ const Feed: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    {/* Organization Info - Enhanced with API data */}
-                    {(selectedEvent as any).organization?.url ? (
-                      <div className="bg-gray-50 rounded-xl p-6">
-                        <h3 className="font-semibold text-gray-900 mb-4">About {selectedEvent.organization}</h3>
-                        <p className="text-gray-600 text-sm mb-4">
-                          Learn more about this organization and their mission to make a positive impact in the community.
-                        </p>
-                        <a
-                          href={(selectedEvent as any).organization.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-green-600 hover:text-green-700 font-medium text-sm"
-                        >
-                          View Organization Profile →
-                        </a>
-                      </div>
-                    ) : (
-                      <div className="bg-gray-50 rounded-xl p-6">
-                        <h3 className="font-semibold text-gray-900 mb-4">About {selectedEvent.organization}</h3>
-                        <p className="text-gray-600 text-sm mb-4">
-                          Learn more about this organization and their mission to make a positive impact in the community.
-                        </p>
-                        <button className="text-green-600 hover:text-green-700 font-medium text-sm">
-                          Contact for more info
-                        </button>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => {
-                        setSelectedEvent(null);
-                        navigate(`/event/${selectedEvent.id}`);
-                      }}
-                      className="w-full py-2 px-4 bg-electric-blue text-white rounded-lg hover:bg-electric-blue-dark transition-colors"
-                    >
-                      View Full Details →
-                    </button>
                   </div>
                 </div>
               </div>
