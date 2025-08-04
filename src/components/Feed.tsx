@@ -310,16 +310,16 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     <span className="text-sm font-medium">{user.stats.streak}</span>
                   </div>
                   <div className="w-px h-4 bg-white/20" />
-                  <div className="flex items-center gap-1">
-                    <Zap className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm font-medium">{user.stats.points}</span>
-                  </div>
-                  <div className="w-px h-4 bg-white/20" />
-                  <div className="flex items-center gap-1">
-                    <Trophy className="h-4 w-4 text-purple-400" />
                     <span className="text-sm font-medium">Lvl {user.stats.level}</span>
                   </div>
                 </div>
+                <motion.div
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  className="text-yellow-400 text-2xl"
+                >
+                  ⬇️
+                </motion.div>
               transition={{ duration: 0.5 }}
               className="flex items-center gap-3"
             >
