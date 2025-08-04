@@ -298,25 +298,25 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
               transition={{ duration: 0.5 }}
               className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto"
             >
-              <h1 className="text-xl sm:text-2xl font-bold text-white">
+              <h1 className="text-lg sm:text-2xl font-bold text-white leading-tight">
                 Hey {user?.name || 'there'}! 🔥
               </h1>
               
               {/* Mini stats bar */}
               {user && (
-                <div className="flex items-center gap-2 sm:gap-3 bg-white/5 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 border border-white/10">
+                <div className="flex items-center gap-2 sm:gap-3 bg-white/5 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 border border-white/10 w-full sm:w-auto justify-center sm:justify-start">
                   <div className="flex items-center gap-1">
-                    <Flame className="h-4 w-4 text-orange-400" />
+                    <Flame className="h-3 w-3 sm:h-4 sm:w-4 text-orange-400" />
                     <span className="text-xs sm:text-sm font-medium">{user.stats.streak}</span>
                   </div>
                   <div className="w-px h-4 bg-white/20" />
                   <div className="flex items-center gap-1">
-                    <Zap className="h-4 w-4 text-yellow-400" />
+                    <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
                     <span className="text-xs sm:text-sm font-medium">{user.stats.points}</span>
                   </div>
                   <div className="w-px h-4 bg-white/20" />
                   <div className="flex items-center gap-1">
-                    <Heart className="h-4 w-4 text-pink-400" />
+                    <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-pink-400" />
                     <span className="text-xs sm:text-sm font-medium">{user.stats.matches}</span>
                   </div>
                 </div>
@@ -338,9 +338,9 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     setTempCoordinates(user.coordinates);
                     setShowLocationSettings(true);
                   }}
-                  className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-colors text-xs sm:text-sm whitespace-nowrap"
+                  className="flex items-center justify-center sm:justify-start gap-2 px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-colors text-xs sm:text-sm whitespace-nowrap order-1 sm:order-none"
                 >
-                  <MapPin className="h-4 w-4" />
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="hidden sm:inline">{user.preferences.location || 'Set Location'}</span>
                   <span className="sm:hidden">{user.preferences.location?.split(',')[0] || 'Location'}</span>
                   <span className="text-white/50">({searchRadius}mi)</span>
@@ -348,15 +348,15 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
               )}
               
               {/* Data source indicator */}
-              <div className="text-xs sm:text-sm text-white/50 text-center sm:text-left">
+              <div className="text-xs sm:text-sm text-white/50 text-center sm:text-left order-2 sm:order-none">
                 {filteredEvents.length} opportunities
               </div>
               
               {/* View Mode Toggle */}
-              <div className="flex bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10 w-full sm:w-auto">
+              <div className="flex bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10 w-full sm:w-auto order-3 sm:order-none">
                 <button
                   onClick={() => setViewMode('swipe')}
-                  className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-full font-medium transition-all text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 ${
+                  className={`flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-full font-medium transition-all text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 ${
                     viewMode === 'swipe'
                       ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg'
                       : 'text-white/50 hover:text-white/70'
@@ -364,11 +364,11 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 >
                   <Heart className="h-3 w-3" />
                   <span className="hidden sm:inline">Swipe</span>
-                  <span className="sm:hidden">💕</span>
+                  <span className="sm:hidden text-xs">Swipe</span>
                 </button>
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-full font-medium transition-all text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 ${
+                  className={`flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-full font-medium transition-all text-xs sm:text-sm flex items-center justify-center gap-1 sm:gap-2 ${
                     viewMode === 'grid'
                       ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
                       : 'text-white/50 hover:text-white/70'
@@ -376,21 +376,21 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 >
                   <Grid3X3 className="h-3 w-3" />
                   <span className="hidden sm:inline">Browse</span>
-                  <span className="sm:hidden">📋</span>
+                  <span className="sm:hidden text-xs">Browse</span>
                 </button>
               </div>
             </motion.div>
           </div>
 
           {/* Subtle data source toggle - moved to bottom left corner */}
-          <div className="fixed bottom-6 left-6 z-20">
+          <div className="fixed bottom-20 sm:bottom-6 left-4 sm:left-6 z-20">
             {/* Pointing arrow and tooltip for Real button - shows automatically on first visit */}
             {dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="absolute -top-12 left-6 flex items-center gap-2 pointer-events-none z-30"
+                className="absolute -top-10 sm:-top-12 left-4 sm:left-6 flex items-center gap-2 pointer-events-none z-30"
               >
                 <motion.div
                   animate={{ y: [0, -4, 0] }}
@@ -399,7 +399,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 >
                   ⬇️
                 </motion.div>
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 sm:px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
                   Try Real Opportunities!
                 </div>
               </motion.div>
@@ -478,14 +478,15 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 />
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-full pb-20">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-full pb-24 sm:pb-20">
                 {filteredEvents.map((event, index) => (
                   <motion.div
                     key={event.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    whileHover={{ y: -5, scale: 1.02 }}
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
                     className="bg-white/10 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/20 hover:border-white/40 transition-all cursor-pointer group shadow-lg"
                     onClick={() => setSelectedEvent(event)}
                   >
@@ -493,10 +494,10 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                       <img
                         src={event.imageUrl}
                         alt={event.title}
-                        className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-36 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute top-3 left-3">
+                      <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
                         <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium text-white backdrop-blur-sm ${
                           event.type === 'virtual' ? 'bg-blue-500/80' :
                           event.type === 'hybrid' ? 'bg-purple-500/80' :
@@ -506,7 +507,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                         </span>
                       </div>
                       {(event as any).distance && (
-                        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
+                        <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
                           {(event as any).distance.toFixed(1)} mi
                         </div>
                       )}
@@ -514,32 +515,28 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
 
                     <div className="p-4 sm:p-5 space-y-2 sm:space-y-3">
                       <div>
-                        <h3 className="text-base sm:text-lg font-semibold text-white mb-1 line-clamp-2">
+                        <h3 className="text-sm sm:text-lg font-bold text-white mb-1 line-clamp-2 leading-tight">
                           {event.title}
                         </h3>
-                        <p className="text-purple-300 font-medium text-xs sm:text-sm line-clamp-1">{event.organization}</p>
+                        <p className="text-purple-300 font-semibold text-xs sm:text-sm line-clamp-1">{event.organization}</p>
                       </div>
 
-                      <p className="text-white/70 text-xs sm:text-sm line-clamp-2">
+                      <p className="text-white/70 text-xs sm:text-sm line-clamp-3 sm:line-clamp-2 leading-snug">
                         {event.description}
                       </p>
 
                       <div className="space-y-1 sm:space-y-2">
                         <div className="flex items-center text-xs text-white/60">
-                          <Calendar className="h-3 w-3 mr-2" />
+                          <Calendar className="h-3 w-3 mr-1.5 sm:mr-2 flex-shrink-0" />
                           {event.date}
                         </div>
                         <div className="flex items-center text-xs text-white/60">
-                          <MapPin className="h-3 w-3 mr-2" />
+                          <MapPin className="h-3 w-3 mr-1.5 sm:mr-2 flex-shrink-0" />
                           <span className="truncate">{event.location}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between pt-1 sm:pt-2">
-                        <div className="flex items-center text-xs text-white/60">
-                          <Users className="h-3 w-3 mr-1" />
-                          <span>{event.spotsAvailable} spots</span>
-                        </div>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           event.frequency === 'one-time' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
                           event.frequency === 'weekly' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
@@ -548,6 +545,10 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                         }`}>
                           {event.frequency}
                         </span>
+                        <div className="flex items-center gap-1 text-xs text-white/50 font-medium">
+                          <Clock className="h-3 w-3" />
+                          {event.commitment}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
