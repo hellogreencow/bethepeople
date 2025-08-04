@@ -68,6 +68,14 @@ const Navigation: React.FC<NavigationProps> = ({ onOpenAIChat }) => {
 
           {/* User Info */}
           <div className="flex items-center space-x-4">
+            {/* Mobile AI Assistant Button */}
+            <button
+              onClick={onOpenAIChat}
+              className="md:hidden bg-gradient-to-r from-purple-600 to-pink-600 text-white p-2 rounded-lg hover:shadow-lg"
+            >
+              <MessageCircle className="h-5 w-5" />
+            </button>
+            
             {user && (
               <div className="hidden md:flex items-center space-x-3">
                 <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full w-10 h-10 flex items-center justify-center">
@@ -82,8 +90,8 @@ const Navigation: React.FC<NavigationProps> = ({ onOpenAIChat }) => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden border-t border-white/20">
-          <div className="flex justify-around py-2">
+        <div className="md:hidden border-t border-white/20 px-4">
+          <div className="flex justify-center gap-4 py-3">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -93,14 +101,14 @@ const Navigation: React.FC<NavigationProps> = ({ onOpenAIChat }) => {
                   onClick={() => {
                     navigate(item.path);
                   }}
-                  className={`flex flex-col items-center py-2 px-4 rounded-lg transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium ${
                     isActive
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold'
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
                       : 'text-white/70 hover:text-white'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
-                  <span className="text-xs font-medium mt-1">{item.label}</span>
+                  <span className="text-sm">{item.label}</span>
                 </button>
               );
             })}

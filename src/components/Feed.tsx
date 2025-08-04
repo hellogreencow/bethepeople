@@ -383,14 +383,14 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
           </div>
 
           {/* Subtle data source toggle - moved to bottom left corner */}
-          <div className="fixed bottom-6 left-6 z-20">
+          <div className="fixed bottom-20 md:bottom-6 left-4 md:left-6 z-20">
             {/* Pointing arrow and tooltip for Real button - shows automatically on first visit */}
             {dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="absolute -top-12 left-6 flex items-center gap-2 pointer-events-none z-30"
+                className="absolute -top-12 left-2 md:left-6 flex items-center gap-2 pointer-events-none z-30"
               >
                 <motion.div
                   animate={{ y: [0, -4, 0] }}
@@ -399,7 +399,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 >
                   ⬇️
                 </motion.div>
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 md:px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
                   Try Real Opportunities!
                 </div>
               </motion.div>
@@ -427,7 +427,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   }
                 }}
                 disabled={isLoadingReal}
-                className={`px-4 py-2 rounded-full font-medium transition-all text-xs flex items-center gap-2 backdrop-blur-xl border ${
+                className={`px-3 md:px-4 py-2 rounded-full font-medium transition-all text-xs flex items-center gap-2 backdrop-blur-xl border ${
                   dataSource === 'real' && realOpportunities.length > 0
                     ? 'bg-green-500/20 text-green-300 border-green-500/30'
                     : 'bg-white/5 text-white/50 border-white/10 hover:bg-white/10 disabled:opacity-50'
@@ -448,7 +448,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
 
               <button
                 onClick={() => setDataSource('sample')}
-                className={`px-4 py-2 rounded-full font-medium transition-all text-xs flex items-center gap-2 backdrop-blur-xl border ${
+                className={`px-3 md:px-4 py-2 rounded-full font-medium transition-all text-xs flex items-center gap-2 backdrop-blur-xl border ${
                   dataSource === 'sample'
                     ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
                     : 'bg-white/5 text-white/50 border-white/10 hover:bg-white/10'
@@ -466,7 +466,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="relative"
-            style={{ height: 'calc(100vh - 200px)' }}
+            style={{ height: 'calc(100vh - 260px)' }}
           >
             {viewMode === 'swipe' ? (
               <div className="h-full">
