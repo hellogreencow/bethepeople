@@ -403,7 +403,19 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
             )}
             
             <div className="flex flex-col gap-2">
-              <button
+              <motion.button
+                animate={dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 ? {
+                  boxShadow: [
+                    '0 0 0 0 rgba(34, 197, 94, 0)',
+                    '0 0 0 4px rgba(34, 197, 94, 0.3)',
+                    '0 0 0 0 rgba(34, 197, 94, 0)'
+                  ]
+                } : {}}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
                 onClick={() => {
                   if (realOpportunities.length > 0) {
                     setDataSource('real');
@@ -429,7 +441,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     Real
                   </>
                 )}
-              </button>
+              </motion.button>
 
               <button
                 onClick={() => setDataSource('sample')}
