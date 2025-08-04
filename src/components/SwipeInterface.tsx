@@ -95,39 +95,22 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-3 md:p-4 rounded-t-2xl">
+      <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-4 rounded-t-2xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-              <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">
-                Discover Opportunities
-              </h1>
-              {/* Mobile: Show current event title */}
-              {currentEvent && (
-                <div className="sm:hidden">
-                  <h2 className="text-sm font-semibold text-purple-300 truncate max-w-[200px]">
-                    {currentEvent.title}
-                  </h2>
-                  <p className="text-xs text-white/60 truncate max-w-[200px]">
-                    {currentEvent.organization}
-                  </p>
-                </div>
-              )}
-            </div>
+            <h1 className="text-xl font-bold text-white">
+              Discover Opportunities
+            </h1>
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              {currentIndex + 1} of {events.length}
+            </span>
           </div>
           
-          <div className="flex items-center space-x-3">
-            {/* Clean counter */}
-            <div className="bg-white/20 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold border border-white/20">
-              {currentIndex + 1} of {events.length}
+          {user?.preferences.location && (
+            <div className="text-sm text-white/70">
+              📍 {user.preferences.location}
             </div>
-            
-            {user?.preferences.location && (
-              <div className="hidden sm:block text-xs md:text-sm text-white/70 truncate max-w-[120px] md:max-w-none">
-                📍 {user.preferences.location}
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
@@ -160,17 +143,17 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4 md:p-6 rounded-b-2xl">
-        <div className="flex justify-center items-center space-x-4 md:space-x-6 max-w-md mx-auto">
+      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-6 rounded-b-2xl">
+        <div className="flex justify-center items-center space-x-6 max-w-md mx-auto">
           {/* Skip Button */}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => handleButtonClick('skip')}
             disabled={!currentEvent || isAnimating}
-            className="bg-white/10 backdrop-blur-xl hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all border border-white/20"
+            className="bg-white/10 backdrop-blur-xl hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed w-16 h-16 rounded-full flex items-center justify-center transition-all border border-white/20"
           >
-            <X className="h-6 w-6 md:h-8 md:w-8 text-red-400" />
+            <X className="h-8 w-8 text-red-400" />
           </motion.button>
 
           {/* Undo Button */}
@@ -179,9 +162,9 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({
             whileTap={{ scale: 0.9 }}
             onClick={handleUndo}
             disabled={currentIndex === 0 || isAnimating}
-            className="bg-white/10 backdrop-blur-xl hover:bg-yellow-500/20 disabled:opacity-50 disabled:cursor-not-allowed w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all border border-white/20"
+            className="bg-white/10 backdrop-blur-xl hover:bg-yellow-500/20 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 rounded-full flex items-center justify-center transition-all border border-white/20"
           >
-            <RotateCcw className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
+            <RotateCcw className="h-5 w-5 text-yellow-400" />
           </motion.button>
 
           {/* Like Button */}
@@ -190,17 +173,17 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({
             whileTap={{ scale: 0.9 }}
             onClick={() => handleButtonClick('like')}
             disabled={!currentEvent || isAnimating}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all shadow-lg"
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-lg"
           >
-            <Check className="h-6 w-6 md:h-8 md:w-8 text-white" />
+            <Check className="h-8 w-8 text-white" />
           </motion.button>
         </div>
 
-        <div className="text-center mt-3 md:mt-4 space-y-1">
-          <p className="text-xs md:text-sm text-white/70">
+        <div className="text-center mt-4 space-y-1">
+          <p className="text-sm text-white/70">
             Swipe right or tap ✅ to say "I'm in!"
           </p>
-          <p className="text-xs md:text-xs text-white/50">
+          <p className="text-xs text-white/50">
             Swipe left or tap ❌ to skip
           </p>
         </div>
