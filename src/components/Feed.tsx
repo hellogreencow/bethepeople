@@ -316,6 +316,13 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   </div>
                   <div className="w-px h-4 bg-white/20" />
                   <div className="flex items-center gap-1">
+                  <Heart className="h-4 w-4 text-pink-400" />
+                  <span className="text-sm font-medium">{user.stats.matches}</span>
+                </div>
+              </div>
+            )}
+          </motion.div>
+
           {/* Right side - View controls */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
