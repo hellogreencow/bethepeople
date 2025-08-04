@@ -91,7 +91,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
     if (user) {
       autoLoadRealOpportunities();
     }
-  }, [user?.preferences.location, user?.coordinates, user?.preferences.interests, realOpportunities.length, ENABLE_AUTO_LOAD_REAL]);
+  }, [user?.preferences.location, user?.coordinates, user?.preferences.interests, realOpportunities.length, ENABLE_AUTO_LOAD_REAL, searchRadius]);
 
   // Check for new achievements
   useEffect(() => {
@@ -316,20 +316,20 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   </div>
                   <div className="w-px h-4 bg-white/20" />
                   <div className="flex items-center gap-1">
-                  <Heart className="h-4 w-4 text-pink-400" />
-                  <span className="text-sm font-medium">{user.stats.matches}</span>
+                    <Heart className="h-4 w-4 text-pink-400" />
+                    <span className="text-sm font-medium">{user.stats.matches}</span>
+                  </div>
                 </div>
-              </div>
-            )}
-          </motion.div>
+              )}
+            </motion.div>
 
-          {/* Right side - View controls */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-3"
-          >
+            {/* Right side - View controls */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-3"
+            >
               {/* Location Settings Button */}
               {user && (
                 <button
@@ -398,7 +398,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 </motion.div>
                 <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
                   Try Real Opportunities!
-                </motion.div>
+                </div>
               </motion.div>
             )}
             
@@ -776,7 +776,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                           )}
                         </div>
 
-                                                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                           <h3 className="font-semibold mb-4">Contact Organizer</h3>
                           <div className="space-y-3 text-sm">
                             <div className="flex items-center">
@@ -987,8 +987,6 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
               </motion.div>
             )}
           </AnimatePresence>
-
-
         </div>
       </div>
     </div>
