@@ -320,13 +320,6 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     <span className="text-sm font-medium">Lvl {user.stats.level}</span>
                   </div>
                 </div>
-              )}
-            </motion.div>
-
-            {/* Right side - Location settings and View mode toggle */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
               className="flex items-center gap-3"
             >
@@ -389,15 +382,15 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 exit={{ opacity: 0, x: -20 }}
                 className="absolute -top-12 left-12 flex items-center gap-2 pointer-events-none z-30"
               >
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
-                  Try Real Opportunities!
-                </div>
                 <motion.div
                   animate={{ y: [0, -3, 0] }}
                   transition={{ repeat: Infinity, duration: 1.5 }}
-                  className="text-yellow-400 text-2xl rotate-45"
+                  className="text-yellow-400 text-2xl"
                 >
-                  ↙️
+                  ⬇️
+                </motion.div>
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
+                  Try Real Opportunities!
                 </motion.div>
               </motion.div>
             )}
