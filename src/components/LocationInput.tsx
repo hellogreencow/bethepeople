@@ -108,10 +108,12 @@ const LocationInput: React.FC<LocationInputProps> = ({
     setTimeout(() => setShowSuggestions(false), 200);
   };
 
+  const isDarkTheme = className?.includes('dark');
+
   return (
     <div className="relative">
       <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <MapPin className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${isDarkTheme ? 'text-white/40' : 'text-gray-400'}`} />
         <input
           ref={inputRef}
           type="text"
@@ -120,13 +122,19 @@ const LocationInput: React.FC<LocationInputProps> = ({
           onBlur={handleBlur}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
-          className={`w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-electric-blue focus:border-transparent ${className}`}
+          className={`w-full pl-10 pr-12 py-3 ${isDarkTheme 
+            ? 'bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-blue-400' 
+            : 'border border-gray-300 focus:ring-2 focus:ring-electric-blue focus:border-transparent'
+          } rounded-lg focus:outline-none ${className}`}
         />
         <button
           type="button"
           onClick={handleUseCurrentLocation}
           disabled={isLoading}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-electric-blue transition-colors"
+          className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 ${isDarkTheme 
+            ? 'text-white/40 hover:text-white' 
+            : 'text-gray-400 hover:text-electric-blue'
+          } transition-colors`}
           title="Use current location"
         >
           {isLoading ? (
@@ -139,20 +147,26 @@ const LocationInput: React.FC<LocationInputProps> = ({
 
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className={`absolute z-10 w-full mt-1 ${isDarkTheme 
+          ? 'bg-gray-900 border border-white/20' 
+          : 'bg-white border border-gray-300'
+        } rounded-lg shadow-lg max-h-60 overflow-y-auto`}>
           {suggestions.map((suggestion) => (
             <button
               key={suggestion.place_id}
               onClick={() => handleSuggestionClick(suggestion)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b border-gray-100 last:border-b-0"
+              className={`w-full px-4 py-3 text-left ${isDarkTheme
+                ? 'hover:bg-white/10 focus:bg-white/10 border-b border-white/10'
+                : 'hover:bg-gray-50 focus:bg-gray-50 border-b border-gray-100'
+              } focus:outline-none last:border-b-0`}
             >
               <div className="flex items-center">
-                <MapPin className="h-4 w-4 text-gray-400 mr-3 flex-shrink-0" />
+                <MapPin className={`h-4 w-4 ${isDarkTheme ? 'text-white/40' : 'text-gray-400'} mr-3 flex-shrink-0`} />
                 <div>
-                  <div className="font-medium text-gray-900">
+                  <div className={`font-medium ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
                     {suggestion.structured_formatting.main_text}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className={`text-sm ${isDarkTheme ? 'text-white/60' : 'text-gray-600'}`}>
                     {suggestion.structured_formatting.secondary_text}
                   </div>
                 </div>

@@ -1,10 +1,17 @@
 import { Loader } from '@googlemaps/js-api-loader';
 
+// Add Google Maps types
+/// <reference types="google.maps" />
+
 // Google Maps API configuration
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
 let googleMapsLoader: Loader | null = null;
 let isLoaded = false;
+
+// Cache for organization searches to prevent repeated API calls
+const organizationSearchCache = new Map<string, any[]>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 // Initialize Google Maps API
 export const initializeGoogleMaps = async (): Promise<void> => {
@@ -217,23 +224,12 @@ export const searchVolunteerOrganizations = async (
   try {
     const service = new google.maps.places.PlacesService(document.createElement('div'));
     
+    // Reduce the number of queries to minimize API calls and warnings
     const searchQueries = [
-      'nonprofit organization',
-      'volunteer opportunities',
-      'animal shelter',
-      'food bank',
-      'community center',
-      'charity organization',
-      'soup kitchen',
-      'homeless shelter',
-      'environmental organization',
-      'youth center',
-      'senior center',
-      'library volunteer',
-      'hospital volunteer',
-      'red cross',
-      'habitat for humanity',
-      'united way'
+      'volunteer opportunities near me',
+      'nonprofit organizations',
+      'charity volunteer',
+      'community service'
     ];
 
     const allResults: google.maps.places.PlaceResult[] = [];

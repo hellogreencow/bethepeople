@@ -2,18 +2,40 @@ import { initializeGoogleMaps, searchVolunteerOrganizations, getOrganizationDeta
 import { VolunteerEvent } from '../data/mockData';
 import { getUniqueOpportunityImage } from './imageService';
 
+// Type declaration for Google Maps PlaceResult
+interface PlaceResult {
+  geometry?: {
+    location?: {
+      lat(): number;
+      lng(): number;
+    };
+  };
+  name?: string;
+  place_id?: string;
+  types?: string[];
+  formatted_address?: string;
+  website?: string;
+  formatted_phone_number?: string;
+}
+
+// Progress callback type
+export type ProgressCallback = (stage: 'searching' | 'processing', message: string, current: number, total: number) => void;
+
 // Generate volunteer opportunities from real organizations
 export const generateVolunteerOpportunities = async (
   userLocation: { lat: number; lng: number },
   userInterests: string[] = [],
-  radiusMiles: number = 25
+  radiusMiles: number = 25,
+  onProgress?: ProgressCallback
 ): Promise<VolunteerEvent[]> => {
   console.log('Starting volunteer opportunity generation for location:', userLocation);
   
   try {
+    onProgress?.('searching', 'Initializing location services...', 0, 0);
     await initializeGoogleMaps();
     console.log('Google Maps initialized successfully');
     
+    onProgress?.('searching', 'Searching for volunteer organizations...', 0, 0);
     const radiusMeters = radiusMiles * 1609.34; // Convert miles to meters
     const organizations = await searchVolunteerOrganizations(userLocation, radiusMeters);
     console.log('Found organizations:', organizations.length);
@@ -23,6 +45,7 @@ export const generateVolunteerOpportunities = async (
     for (let i = 0; i < organizations.length; i++) {
       const org = organizations[i];
       console.log(`Processing organization ${i + 1}/${organizations.length}:`, org.name);
+      onProgress?.('processing', `Processing ${org.name}...`, i + 1, organizations.length);
       
       if (!org.place_id || !org.geometry?.location) continue;
 
@@ -111,7 +134,7 @@ const generateFallbackOpportunities = (userLocation: { lat: number; lng: number 
 };
 
 const generateOpportunitiesForOrganization = async (
-  org: google.maps.places.PlaceResult,
+  org: PlaceResult,
   userLocation: { lat: number; lng: number },
   userInterests: string[]
 ): Promise<VolunteerEvent[]> => {

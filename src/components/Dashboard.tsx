@@ -1,289 +1,328 @@
 import React from 'react';
-import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
+import { motion } from 'framer-motion';
 import Navigation from './Navigation';
 import { 
+  User, 
   Calendar, 
   Clock, 
-  Award, 
-  TrendingUp, 
+  MapPin, 
+  Trophy, 
+  Flame, 
   Heart, 
-  Users, 
-  MapPin,
   Star,
+  TrendingUp,
+  Award,
+  Users,
+  ArrowRight,
+  Activity,
   Target,
-  Gift
+  Zap,
+  CheckCircle
 } from 'lucide-react';
 
-const Dashboard: React.FC = () => {
-  const { user } = useUser();
-  const navigate = useNavigate();
+interface DashboardProps {
+  onOpenAIChat: () => void;
+}
 
+const Dashboard: React.FC<DashboardProps> = ({ onOpenAIChat }) => {
+  const navigate = useNavigate();
+  const { user } = useUser();
+
+  // Wait for user context to load
   if (!user) {
-    navigate('/onboarding');
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
   }
 
-  // Mock data for demonstration
-  const stats = {
-    totalHours: 24,
-    eventsAttended: 8,
-    causesSupported: 3,
-    impactScore: 85
-  };
-
-  const recentActivities = [
+  // Mock upcoming events
+  const upcomingEvents = [
     {
       id: '1',
-      title: 'Community Garden Cleanup',
-      organization: 'Green Earth Initiative',
-      date: '2025-01-12',
-      hours: 3,
-      status: 'completed'
+      title: 'Community Garden Project',
+      date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      time: '9:00 AM',
+      location: 'Downtown Community Center',
+      participants: 15
     },
     {
       id: '2',
-      title: 'Reading Buddy Program',
-      organization: 'Literacy First',
-      date: '2025-01-15',
-      hours: 2,
-      status: 'upcoming'
-    },
-    {
-      id: '4',
-      title: 'Animal Shelter Dog Walking',
-      organization: 'Happy Tails Rescue',
-      date: '2025-01-18',
-      hours: 2,
-      status: 'upcoming'
+      title: 'Food Bank Distribution',
+      date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      time: '2:00 PM',
+      location: 'Central Food Bank',
+      participants: 25
     }
   ];
 
-  const badges = [
-    { name: 'Community Helper', icon: '🏘️', description: 'Volunteered in 3+ different areas' },
-    { name: 'Consistent Contributor', icon: '⭐', description: 'Volunteered for 3 months straight' },
-    { name: 'Animal Friend', icon: '🐕', description: 'Completed 5+ animal-related activities' }
+  // Recent activity
+  const recentActivity = [
+    { type: 'event', action: 'Attended Beach Cleanup', time: '2 days ago', icon: CheckCircle, color: 'text-green-400' },
+    { type: 'achievement', action: 'Earned "Week Warrior" badge', time: '1 week ago', icon: Trophy, color: 'text-yellow-400' },
+    { type: 'milestone', action: 'Reached 50 volunteer hours', time: '2 weeks ago', icon: Star, color: 'text-purple-400' },
+    { type: 'event', action: 'RSVP\'d to Food Bank Distribution', time: '3 weeks ago', icon: Calendar, color: 'text-blue-400' }
   ];
 
-  const impactData = [
-    { cause: 'Environment', hours: 12, percentage: 50 },
-    { cause: 'Education', hours: 8, percentage: 33 },
-    { cause: 'Animals', hours: 4, percentage: 17 }
+  const statCards = [
+    {
+      title: 'Current Streak',
+      value: user.stats.streak,
+      suffix: ' days',
+      icon: Flame,
+      color: 'from-orange-500 to-red-600',
+      change: '+2'
+    },
+    {
+      title: 'Total Points',
+      value: user.stats.points,
+      icon: Star,
+      color: 'from-blue-600 to-purple-600',
+      change: '+50'
+    },
+    {
+      title: 'Volunteer Hours',
+      value: user.stats.volunteerHours,
+      suffix: ' hrs',
+      icon: Clock,
+      color: 'from-green-500 to-teal-600',
+      change: '+5'
+    },
+    {
+      title: 'Impact Score',
+      value: user.stats.impactScore,
+      suffix: '%',
+      icon: Target,
+      color: 'from-purple-600 to-pink-600',
+      change: '+8'
+    }
   ];
+
+  const unlockedAchievements = user.achievements.filter(a => a.unlockedAt);
+  const progressAchievements = user.achievements.filter(a => !a.unlockedAt && a.progress && a.progress > 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-500/20 rounded-full blur-3xl animate-pulse delay-2000" />
+      </div>
+
+      <div className="relative z-10">
+        <Navigation onOpenAIChat={onOpenAIChat} />
+        <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user.name}!
-          </h1>
-          <p className="text-gray-600">
-            Here's your volunteer impact and upcoming opportunities
-          </p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
 
-        {/* Stats Cards */}
+          <h1 className="text-4xl font-bold text-white mb-2">Welcome back, {user.name}!</h1>
+          <p className="text-white/70 text-lg">Here's your volunteer impact summary</p>
+        </motion.div>
+
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-green-100 rounded-full p-3">
-                <Clock className="h-6 w-6 text-green-600" />
+          {statCards.map((stat, index) => (
+            <motion.div
+              key={stat.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+                              className={`relative overflow-hidden rounded-2xl p-6 backdrop-blur-xl bg-white/20 border border-white/20 hover:scale-105 transition-all duration-300`}
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-20`} />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <stat.icon className="h-8 w-8 text-white" />
+                  <span className="text-xs bg-green-500/20 text-green-300 border border-green-500/30 px-2 py-1 rounded-full">
+                    {stat.change}
+                  </span>
+                </div>
+                <h3 className="text-white/70 text-sm font-medium mb-1">{stat.title}</h3>
+                <div className="flex items-baseline">
+                  <span className="text-3xl font-bold text-white">
+                    {stat.value}
+                  </span>
+                  <span className="text-lg text-white/70 ml-1">{stat.suffix}</span>
+                </div>
               </div>
-              <span className="text-2xl font-bold text-gray-900">{stats.totalHours}</span>
-            </div>
-            <h3 className="font-semibold text-gray-900">Volunteer Hours</h3>
-            <p className="text-gray-600 text-sm">Total time contributed</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-100 rounded-full p-3">
-                <Calendar className="h-6 w-6 text-blue-600" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">{stats.eventsAttended}</span>
-            </div>
-            <h3 className="font-semibold text-gray-900">Events Attended</h3>
-            <p className="text-gray-600 text-sm">Opportunities completed</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-orange-100 rounded-full p-3">
-                <Heart className="h-6 w-6 text-orange-600" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">{stats.causesSupported}</span>
-            </div>
-            <h3 className="font-semibold text-gray-900">Causes Supported</h3>
-            <p className="text-gray-600 text-sm">Different impact areas</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-purple-100 rounded-full p-3">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">{stats.impactScore}</span>
-            </div>
-            <h3 className="font-semibold text-gray-900">Impact Score</h3>
-            <p className="text-gray-600 text-sm">Community contribution</p>
-          </div>
+            </motion.div>
+          ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Recent Activities */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm p-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Upcoming Events */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6"
+            >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Recent Activities</h2>
+                <h2 className="text-2xl font-bold text-white">Upcoming Events</h2>
                 <button
                   onClick={() => navigate('/feed')}
-                  className="text-green-600 hover:text-green-700 font-medium text-sm"
+                  className="text-blue-400 hover:text-blue-300 flex items-center gap-1 text-sm font-medium"
                 >
-                  Find More →
+                  View all
+                  <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
-
-              <div className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-3 h-3 rounded-full ${
-                        activity.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'
-                      }`}></div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{activity.title}</h3>
-                        <p className="text-gray-600 text-sm">{activity.organization}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium text-gray-900">{activity.date}</p>
-                      <p className="text-gray-600 text-sm">{activity.hours} hours</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Impact Breakdown */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Impact Breakdown</h2>
               
               <div className="space-y-4">
-                {impactData.map((item) => (
-                  <div key={item.cause}>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-gray-900">{item.cause}</span>
-                      <span className="text-gray-600">{item.hours} hours</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${item.percentage}%` }}
-                      ></div>
+                {upcomingEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    <h3 className="text-white font-semibold mb-2">{event.title}</h3>
+                    <div className="grid grid-cols-2 gap-2 text-sm text-white/70">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        {event.date.toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        {event.time}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        {event.location}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        {event.participants} volunteers
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
+
+            {/* Recent Activity */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6"
+            >
+              <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
+              <div className="space-y-4">
+                {recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className={`p-2 rounded-full bg-white/10 ${activity.color}`}>
+                      <activity.icon className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">{activity.action}</p>
+                      <p className="text-white/50 text-sm">{activity.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Badges */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Your Badges</h2>
-              
-              <div className="space-y-4">
-                {badges.map((badge, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="text-2xl">{badge.icon}</div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{badge.name}</h3>
-                      <p className="text-gray-600 text-sm">{badge.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button className="w-full mt-4 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                View All Badges
-              </button>
-            </div>
-
-            {/* Monthly Goal */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Monthly Goal</h2>
-              
-              <div className="text-center mb-4">
-                <div className="relative w-24 h-24 mx-auto mb-4">
-                  <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      className="text-gray-200"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                    <path
-                      className="text-green-600"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeDasharray="75, 100"
-                      strokeLinecap="round"
-                      fill="none"
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xl font-bold text-gray-900">75%</span>
-                  </div>
+          <div className="space-y-8">
+            {/* Profile Summary */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+              className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                  <User className="h-8 w-8 text-white" />
                 </div>
-                <p className="text-gray-600">15 of 20 hours completed</p>
-              </div>
-
-              <div className="bg-green-50 rounded-lg p-4">
-                <div className="flex items-center text-green-800">
-                  <Star className="h-5 w-5 mr-2" />
-                  <span className="font-medium">Almost there!</span>
+                <div>
+                  <h3 className="text-xl font-bold text-white">{user.name}</h3>
+                  <p className="text-white/70">Level {user.stats.level} Volunteer</p>
                 </div>
-                <p className="text-green-700 text-sm mt-1">
-                  Just 5 more hours to reach your monthly goal.
-                </p>
               </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
               
               <div className="space-y-3">
-                <button
-                  onClick={() => navigate('/feed')}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  <Heart className="h-5 w-5" />
-                  Find Opportunities
-                </button>
-                
-                <button className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  <Users className="h-5 w-5" />
-                  Invite Friends
-                </button>
-                
-                <button className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  <Gift className="h-5 w-5" />
-                  Share Impact
-                </button>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/70">Member since</span>
+                  <span className="text-white font-medium">
+                    {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/70">Location</span>
+                  <span className="text-white font-medium">{user.preferences.location}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/70">Events attended</span>
+                  <span className="text-white font-medium">{user.stats.eventsAttended}</span>
+                </div>
               </div>
-            </div>
+            </motion.div>
+
+            {/* Achievements */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7 }}
+              className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6"
+            >
+              <h2 className="text-xl font-bold text-white mb-4">Achievements</h2>
+              
+              {unlockedAchievements.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-sm text-white/70 mb-2">Unlocked</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {unlockedAchievements.map((achievement) => (
+                      <div
+                        key={achievement.id}
+                        className="text-center"
+                        title={achievement.title}
+                      >
+                        <div className="text-2xl mb-1">{achievement.icon}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {progressAchievements.length > 0 && (
+                <div>
+                  <h3 className="text-sm text-white/70 mb-2">In Progress</h3>
+                  <div className="space-y-3">
+                    {progressAchievements.slice(0, 3).map((achievement) => (
+                      <div key={achievement.id}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm text-white">{achievement.title}</span>
+                          <span className="text-xs text-white/50">
+                            {achievement.progress}/{achievement.maxProgress}
+                          </span>
+                        </div>
+                        <div className="w-full bg-white/20 rounded-full h-1.5">
+                          <div
+                            className="bg-gradient-to-r from-blue-600 to-purple-600 h-full rounded-full"
+                            style={{ 
+                              width: `${(achievement.progress! / achievement.maxProgress!) * 100}%` 
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
           </div>
+        </div>
         </div>
       </div>
     </div>

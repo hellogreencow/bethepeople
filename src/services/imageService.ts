@@ -29,9 +29,13 @@ export const fetchOrganizationImage = async (
       // Try to scrape organization's website for their logo/images
       const response = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(organizationUrl)}&screenshot=true&meta=false&embed=screenshot.url`);
       if (response.ok) {
-        const data = await response.json();
-        if (data.data?.screenshot?.url) {
-          return data.data.screenshot.url;
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          if (data.data?.screenshot?.url) {
+            return data.data.screenshot.url;
+          }
         }
       }
     }
@@ -39,6 +43,11 @@ export const fetchOrganizationImage = async (
     // Fallback: Search for organization on social media or Google Images
     return await searchOrganizationImage(organizationName);
   } catch (error) {
+    // Suppress PNG parsing errors
+    if (error instanceof SyntaxError && error.message.includes('PNG')) {
+      // Silently fail for image parsing errors
+      return null;
+    }
     console.warn('Failed to fetch organization image:', error);
     return null;
   }

@@ -1,97 +1,99 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import LocationInput from './LocationInput';
-import { ChevronRight, ChevronLeft, MapPin, Clock, Heart, Briefcase } from 'lucide-react';
+import { 
+  User, 
+  Mail, 
+  MapPin, 
+  Clock, 
+  Heart, 
+  Users, 
+  Calendar,
+  ChevronRight,
+  ChevronLeft,
+  CheckCircle,
+  MessageSquare,
+  Loader2
+} from 'lucide-react';
+
+interface FormData {
+  name: string;
+  email: string;
+  interests: string[];
+  contributionType: string[];
+  availability: string;
+  location: string;
+  coordinates?: { lat: number; lng: number };
+}
 
 const Onboarding: React.FC = () => {
   const navigate = useNavigate();
   const { setUser } = useUser();
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
     name: '',
-    interests: [] as string[],
-    contributionType: [] as string[],
+    email: '',
+    interests: [],
+    contributionType: [],
     availability: '',
-    location: '',
-    coordinates: undefined as { lat: number; lng: number } | undefined
+    location: ''
   });
 
-  // Handle Enter key press
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && canProceed()) {
-      if (currentStep === steps.length - 1) {
-        handleComplete();
-      } else {
-        handleNext();
-      }
-    }
-  };
+  const totalSteps = 5;
 
-  const interests = [
-    'Environment & Nature',
-    'Education & Youth',
-    'Seniors & Elderly',
-    'Animals & Pets',
+  const interestOptions = [
+    'Community Building',
+    'Environmental Action', 
+    'Education & Mentoring',
+    'Healthcare Support',
+    'Technology for Good',
     'Arts & Culture',
-    'Health & Wellness',
-    'Food & Hunger',
-    'Housing & Homelessness',
-    'Technology & Digital',
-    'Community Development'
+    'Social Justice',
+    'Economic Empowerment',
+    'Youth Programs',
+    'Senior Support',
+    'Animal Welfare',
+    'Disaster Relief'
   ];
 
   const contributionTypes = [
-    'In-person volunteering',
-    'Virtual/Remote help',
-    'Skilled professional work',
-    'Event planning & coordination',
-    'Teaching & mentoring',
-    'Physical labor & cleanup',
-    'Fundraising & donations',
-    'Administrative support'
+    { value: 'volunteer', label: 'Volunteer Time', icon: Heart },
+    { value: 'skills', label: 'Professional Skills', icon: Users },
+    { value: 'mentor', label: 'Mentorship', icon: MessageSquare },
+    { value: 'physical', label: 'Physical Help', icon: Users }
   ];
 
   const availabilityOptions = [
-    'Weekends only',
+    'Weekday mornings',
+    'Weekday afternoons',
     'Weekday evenings',
-    'Flexible schedule',
-    'Once a month',
-    'Weekly commitment',
-    'One-time events only'
+    'Weekend mornings',
+    'Weekend afternoons',
+    'Weekend evenings',
+    'Flexible schedule'
   ];
 
-  const handleInterestToggle = (interest: string) => {
-    setFormData(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
-    }));
-  };
-
-  const handleContributionToggle = (type: string) => {
-    setFormData(prev => ({
-      ...prev,
-      contributionType: prev.contributionType.includes(type)
-        ? prev.contributionType.filter(t => t !== type)
-        : [...prev.contributionType, type]
-    }));
-  };
-
   const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(prev => prev + 1);
     }
   };
 
   const handleBack = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
     const userData = {
       name: formData.name,
       preferences: {
@@ -101,12 +103,65 @@ const Onboarding: React.FC = () => {
         location: formData.location
       },
       coordinates: formData.coordinates,
-      volunteerHours: 0,
-      eventsAttended: 0,
+      stats: {
+        streak: 0,
+        points: 0,
+        matches: 0,
+        totalSwipes: 0,
+        level: 1,
+        volunteerHours: 0,
+        eventsAttended: 0,
+        impactScore: 0
+      },
       badges: [],
-      rsvpedEvents: []
+      rsvpedEvents: [],
+      achievements: [
+        {
+          id: 'first-step',
+          title: 'First Step',
+          description: 'Complete your profile',
+          icon: '🌟',
+          progress: 0,
+          maxProgress: 1
+        },
+        {
+          id: 'helping-hand',
+          title: 'Helping Hand',
+          description: 'Attend your first event',
+          icon: '🤝',
+          progress: 0,
+          maxProgress: 1
+        },
+        {
+          id: 'community-champion',
+          title: 'Community Champion',
+          description: 'Volunteer for 10 hours',
+          icon: '🏆',
+          progress: 0,
+          maxProgress: 10
+        },
+        {
+          id: 'streak-master',
+          title: 'Streak Master',
+          description: 'Maintain a 7-day streak',
+          icon: '🔥',
+          progress: 0,
+          maxProgress: 7
+        },
+        {
+          id: 'social-butterfly',
+          title: 'Social Butterfly',
+          description: 'RSVP to 5 events',
+          icon: '🦋',
+          progress: 0,
+          maxProgress: 5
+        }
+      ],
+      lastActiveDate: new Date()
     };
+    
     setUser(userData);
+    setIsSubmitting(false);
     navigate('/feed');
   };
 
@@ -124,181 +179,236 @@ const Onboarding: React.FC = () => {
   const steps = [
     {
       title: "What's your name?",
-      icon: <Heart className="h-6 w-6" />,
-      component: (
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Enter your first name"
-            value={formData.name}
-            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-            onKeyDown={handleKeyPress}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          />
-        </div>
-      )
+      description: "Let's start with the basics"
     },
     {
-      title: "What causes do you care about?",
-      icon: <Heart className="h-6 w-6" />,
-      component: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {interests.map((interest) => (
-            <button
-              key={interest}
-              onClick={() => handleInterestToggle(interest)}
-              className={`p-4 rounded-lg border-2 text-left transition-all ${
-                formData.interests.includes(interest)
-                  ? 'border-electric-blue bg-blue-50 text-electric-blue font-bold'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-electric-blue'
-              }`}
-            >
-              {interest}
-            </button>
-          ))}
-        </div>
-      )
+      title: "What interests you?",
+      description: "Select the causes you're passionate about"
     },
     {
-      title: "How would you like to contribute?",
-      icon: <Briefcase className="h-6 w-6" />,
-      component: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {contributionTypes.map((type) => (
-            <button
-              key={type}
-              onClick={() => handleContributionToggle(type)}
-              className={`p-4 rounded-lg border-2 text-left transition-all ${
-                formData.contributionType.includes(type)
-                  ? 'border-electric-red bg-red-50 text-electric-red font-bold'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-electric-red'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
-      )
+      title: "How would you like to help?",
+      description: "Choose your preferred contribution types"
     },
     {
-      title: "When are you usually free?",
-      icon: <Clock className="h-6 w-6" />,
-      component: (
-        <div className="space-y-3">
-          {availabilityOptions.map((option) => (
-            <button
-              key={option}
-              onClick={() => setFormData(prev => ({ ...prev, availability: option }))}
-              className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
-                formData.availability === option
-                  ? 'border-electric-blue bg-blue-50 text-electric-blue font-bold'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-electric-blue'
-              }`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      )
+      title: "When are you available?",
+      description: "Let us know your schedule"
     },
     {
-      title: "What city or zip code are you in?",
-      icon: <MapPin className="h-6 w-6" />,
-      component: (
-        <div className="space-y-4">
-          <LocationInput
-            value={formData.location}
-            onChange={(location, coordinates) => 
-              setFormData(prev => ({ ...prev, location, coordinates }))
-            }
-            placeholder="Enter your city or zip code"
-          />
-          <p className="text-sm text-gray-600 mt-2">
-            We'll use this to show you volunteer opportunities in your area. 
-            Click the navigation icon to use your current location.
-          </p>
-        </div>
-      )
+      title: "Where are you located?",
+      description: "Help us find opportunities near you"
     }
   ];
 
+  const toggleInterest = (interest: string) => {
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter(i => i !== interest)
+        : [...prev.interests, interest]
+    }));
+  };
+
+  const toggleContribution = (type: string) => {
+    setFormData(prev => ({
+      ...prev,
+      contributionType: prev.contributionType.includes(type)
+        ? prev.contributionType.filter(t => t !== type)
+        : [...prev.contributionType, type]
+    }));
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-electric-blue-light via-white to-electric-red-light py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Progress Bar */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-500/20 rounded-full blur-3xl animate-pulse delay-2000" />
+      </div>
+      
+      <div className="relative z-10 w-full max-w-2xl">
+        {/* Glass morphism container */}
+                      <div className="relative backdrop-blur-xl bg-white/20 border border-white/20 rounded-3xl p-8 shadow-2xl">
+          {/* Progress bar */}
           <div className="mb-8">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">Step {currentStep + 1} of {steps.length}</span>
-              <span className="text-sm text-gray-600">{Math.round(((currentStep + 1) / steps.length) * 100)}%</span>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-white/70 text-sm">Step {currentStep + 1} of {totalSteps}</span>
+              <span className="text-white/70 text-sm">{Math.round(((currentStep + 1) / totalSteps) * 100)}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-electric-blue h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-              ></div>
+            <div className="w-full bg-white/20 rounded-full h-2 overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              />
             </div>
           </div>
 
-          {/* Question Card */}
-          <div 
-            className="bg-white rounded-2xl shadow-xl p-8 border-4 border-electric-blue"
-            onKeyDown={handleKeyPress}
-            tabIndex={0}
-          >
-            <div className="flex items-center mb-6">
-              <div className="bg-electric-red rounded-full p-3 mr-4">
-                {steps[currentStep].icon}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="space-y-6">
+                <div className="text-center space-y-2">
+                  <h2 className="text-2xl font-bold text-white">{steps[currentStep].title}</h2>
+                  <p className="text-white/70">{steps[currentStep].description}</p>
+                </div>
+
+                {/* Step Content */}
+                {currentStep === 0 && (
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/40" />
+                      <input
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:border-blue-400 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {currentStep === 1 && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {interestOptions.map((interest) => (
+                      <motion.button
+                        key={interest}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => toggleInterest(interest)}
+                        className={`p-3 rounded-xl border text-sm font-medium transition-all ${
+                          formData.interests.includes(interest)
+                            ? 'bg-blue-500/20 border-blue-400 text-white'
+                            : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'
+                        }`}
+                      >
+                        {interest}
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
+
+                {currentStep === 2 && (
+                  <div className="grid grid-cols-1 gap-4">
+                    {contributionTypes.map((type) => (
+                      <motion.button
+                        key={type.value}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => toggleContribution(type.value)}
+                        className={`p-4 rounded-xl border transition-all ${
+                          formData.contributionType.includes(type.value)
+                            ? 'bg-purple-500/20 border-purple-400 text-white'
+                            : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <type.icon className="w-5 h-5" />
+                          <span className="font-medium">{type.label}</span>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
+
+                {currentStep === 3 && (
+                  <div className="grid grid-cols-1 gap-3">
+                    {availabilityOptions.map((option) => (
+                      <motion.button
+                        key={option}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setFormData({ ...formData, availability: option })}
+                        className={`p-3 rounded-xl border text-sm font-medium transition-all ${
+                          formData.availability === option
+                            ? 'bg-red-500/20 border-red-400 text-white'
+                            : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Clock className="w-4 h-4" />
+                          <span>{option}</span>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
+
+                {currentStep === 4 && (
+                  <div className="space-y-4">
+                    <LocationInput
+                      value={formData.location}
+                      onChange={(location, coordinates) => {
+                        setFormData({ 
+                          ...formData, 
+                          location,
+                          coordinates
+                        });
+                      }}
+                      placeholder="Enter your city or zip code"
+                      className="dark"
+                    />
+                  </div>
+                )}
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                {steps[currentStep].title}
-              </h2>
-            </div>
+            </motion.div>
+          </AnimatePresence>
 
-            {steps[currentStep].component}
+          {/* Navigation */}
+          <div className="flex justify-between items-center mt-8">
+            <button
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                currentStep === 0
+                  ? 'text-gray-500 cursor-not-allowed'
+                  : 'text-white hover:bg-white/10'
+              }`}
+            >
+              <ChevronLeft className="h-5 w-5" />
+              Back
+            </button>
 
-            {/* Navigation */}
-            <div className="flex justify-between mt-8">
+            {currentStep === steps.length - 1 ? (
               <button
-                onClick={handleBack}
-                disabled={currentStep === 0}
-                className={`px-6 py-3 rounded-lg font-semibold flex items-center gap-2 ${
-                  currentStep === 0
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-700 hover:bg-gray-100'
+                onClick={handleComplete}
+                disabled={!canProceed() || isSubmitting}
+                className={`px-8 py-3 rounded-lg font-semibold transition-all ${
+                  canProceed() && !isSubmitting
+                    ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 text-white hover:shadow-lg'
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                 }`}
               >
-                <ChevronLeft className="h-5 w-5" />
-                Back
+                {isSubmitting ? (
+                  <div className="flex items-center space-x-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Creating Profile...</span>
+                  </div>
+                ) : (
+                  'Complete Setup'
+                )}
               </button>
-
-              {currentStep === steps.length - 1 ? (
-                <button
-                  onClick={handleComplete}
-                  disabled={!canProceed()}
-                  className={`px-8 py-3 rounded-lg font-semibold ${
-                    canProceed()
-                      ? 'bg-electric-red text-white hover:bg-electric-red-dark shadow-lg'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  Complete Setup
-                </button>
-              ) : (
-                <button
-                  onClick={handleNext}
-                  disabled={!canProceed()}
-                  className={`px-6 py-3 rounded-lg font-semibold flex items-center gap-2 ${
-                    canProceed()
-                      ? 'bg-electric-blue text-white hover:bg-electric-blue-dark shadow-lg'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  Next
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              )}
-            </div>
+            ) : (
+              <button
+                onClick={handleNext}
+                disabled={!canProceed()}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  canProceed()
+                    ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 text-white hover:shadow-lg'
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                Next
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
