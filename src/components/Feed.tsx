@@ -387,11 +387,11 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="absolute -top-12 left-12 flex items-center gap-2 pointer-events-none z-30"
+                className="absolute -top-12 left-6 flex items-center gap-2 pointer-events-none z-30"
               >
                 <motion.div
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                   className="text-yellow-400 text-2xl"
                 >
                   ⬇️
