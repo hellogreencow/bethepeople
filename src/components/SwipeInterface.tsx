@@ -98,19 +98,36 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({
       <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-3 md:p-4 rounded-t-2xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="text-lg md:text-xl font-bold text-white">
-              Discover Opportunities
-            </h1>
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium">
-              {currentIndex + 1} of {events.length}
-            </span>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+              <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">
+                Discover Opportunities
+              </h1>
+              {/* Mobile: Show current event title */}
+              {currentEvent && (
+                <div className="sm:hidden">
+                  <h2 className="text-sm font-semibold text-purple-300 truncate max-w-[200px]">
+                    {currentEvent.title}
+                  </h2>
+                  <p className="text-xs text-white/60 truncate max-w-[200px]">
+                    {currentEvent.organization}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
           
-          {user?.preferences.location && (
-            <div className="text-xs md:text-sm text-white/70 truncate max-w-[120px] md:max-w-none">
-              📍 {user.preferences.location}
+          <div className="flex items-center space-x-3">
+            {/* Clean counter */}
+            <div className="bg-white/20 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold border border-white/20">
+              {currentIndex + 1} of {events.length}
             </div>
-          )}
+            
+            {user?.preferences.location && (
+              <div className="hidden sm:block text-xs md:text-sm text-white/70 truncate max-w-[120px] md:max-w-none">
+                📍 {user.preferences.location}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
