@@ -316,13 +316,13 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   </div>
                   <div className="w-px h-4 bg-white/20" />
                   <div className="flex items-center gap-1">
-                    <Trophy className="h-4 w-4 text-purple-400" />
-                    <span className="text-sm font-medium">Lvl {user.stats.level}</span>
-                  </div>
-                </div>
-              transition={{ duration: 0.5 }}
-              className="flex items-center gap-3"
-            >
+          {/* Right side - View controls */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-3"
+          >
               {/* Location Settings Button */}
               {user && (
                 <button
