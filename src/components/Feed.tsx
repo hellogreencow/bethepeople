@@ -381,24 +381,24 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
 
           {/* Subtle data source toggle - moved to bottom left corner */}
           <div className="fixed bottom-6 left-6 z-20">
-            {/* Pointing arrow and tooltip for Real button */}
-            {dataSource === 'sample' && !isLoadingReal && (
+            {/* Pointing arrow and tooltip for Real button - shows automatically on first visit */}
+            {dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="absolute -right-16 top-0 flex items-center gap-2 pointer-events-none z-30"
+                className="absolute -top-12 left-12 flex items-center gap-2 pointer-events-none z-30"
               >
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                  className="text-yellow-400 text-2xl"
-                >
-                  👈
-                </motion.div>
                 <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
                   Try Real Opportunities!
                 </div>
+                <motion.div
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  className="text-yellow-400 text-2xl rotate-45"
+                >
+                  ↙️
+                </motion.div>
               </motion.div>
             )}
             
