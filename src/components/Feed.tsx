@@ -382,6 +382,83 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
             </motion.div>
           </div>
 
+          {/* Data Source Toggle - Moved to main layout on mobile */}
+          <div className="mb-4 sm:hidden">
+            {/* Pointing arrow and tooltip for Real button - shows automatically on first visit */}
+            {dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center justify-center gap-2 mb-2"
+              >
+                <motion.div
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  className="text-yellow-400 text-xl"
+                >
+                  ⬇️
+                </motion.div>
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 py-1 rounded-lg text-xs font-bold shadow-lg animate-pulse">
+                  Try Real Opportunities!
+                </div>
+              </motion.div>
+            )}
+            
+            <div className="flex justify-center gap-2">
+              <motion.button
+                animate={dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 ? {
+                  boxShadow: [
+                    '0 0 0 0 rgba(34, 197, 94, 0)',
+                    '0 0 0 4px rgba(34, 197, 94, 0.3)',
+                    '0 0 0 0 rgba(34, 197, 94, 0)'
+                  ]
+                } : {}}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                onClick={() => {
+                  if (realOpportunities.length > 0) {
+                    setDataSource('real');
+                  } else {
+                    loadRealOpportunities();
+                  }
+                }}
+                disabled={isLoadingReal}
+                className={`px-4 py-2 rounded-full font-medium transition-all text-xs flex items-center gap-2 backdrop-blur-xl border ${
+                  dataSource === 'real' && realOpportunities.length > 0
+                    ? 'bg-green-500/20 text-green-300 border-green-500/30'
+                    : 'bg-white/5 text-white/50 border-white/10 hover:bg-white/10 disabled:opacity-50'
+                }`}
+              >
+                {isLoadingReal ? (
+                  <>
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-3 w-3" />
+                    Real
+                  </>
+                )}
+              </motion.button>
+
+              <button
+                onClick={() => setDataSource('sample')}
+                className={`px-4 py-2 rounded-full font-medium transition-all text-xs flex items-center gap-2 backdrop-blur-xl border ${
+                  dataSource === 'sample'
+                    ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                    : 'bg-white/5 text-white/50 border-white/10 hover:bg-white/10'
+                }`}
+              >
+                <Sparkles className="h-3 w-3" />
+                Sample
+              </button>
+            </div>
+          </div>
           {/* Subtle data source toggle - moved to bottom left corner */}
           <div className="fixed bottom-20 sm:bottom-6 left-4 sm:left-6 z-20">
             {/* Pointing arrow and tooltip for Real button - shows automatically on first visit */}
@@ -390,7 +467,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="absolute -top-10 sm:-top-12 left-4 sm:left-6 flex items-center gap-2 pointer-events-none z-30"
+                className="absolute -top-12 left-6 flex items-center gap-2 pointer-events-none z-30"
               >
                 <motion.div
                   animate={{ y: [0, -4, 0] }}
@@ -399,7 +476,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 >
                   ⬇️
                 </motion.div>
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 sm:px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap shadow-lg animate-pulse">
                   Try Real Opportunities!
                 </div>
               </motion.div>
@@ -466,7 +543,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="relative"
-            style={{ height: 'calc(100vh - 200px)' }}
+            style={{ height: 'calc(100vh - 250px)' }}
           >
             {viewMode === 'swipe' ? (
               <div className="h-full">
@@ -478,7 +555,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 />
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-full pb-24 sm:pb-20">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-y-auto max-h-full pb-6 sm:pb-20">
                 {filteredEvents.map((event, index) => (
                   <motion.div
                     key={event.id}
@@ -515,22 +592,22 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
 
                     <div className="p-4 sm:p-5 space-y-2 sm:space-y-3">
                       <div>
-                        <h3 className="text-sm sm:text-lg font-bold text-white mb-1 line-clamp-2 leading-tight">
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-1 line-clamp-2 leading-tight">
                           {event.title}
                         </h3>
-                        <p className="text-purple-300 font-semibold text-xs sm:text-sm line-clamp-1">{event.organization}</p>
+                        <p className="text-purple-300 font-semibold text-sm sm:text-sm line-clamp-1">{event.organization}</p>
                       </div>
 
-                      <p className="text-white/70 text-xs sm:text-sm line-clamp-3 sm:line-clamp-2 leading-snug">
+                      <p className="text-white/70 text-sm sm:text-sm line-clamp-2 leading-snug">
                         {event.description}
                       </p>
 
                       <div className="space-y-1 sm:space-y-2">
-                        <div className="flex items-center text-xs text-white/60">
+                        <div className="flex items-center text-sm text-white/60">
                           <Calendar className="h-3 w-3 mr-1.5 sm:mr-2 flex-shrink-0" />
                           {event.date}
                         </div>
-                        <div className="flex items-center text-xs text-white/60">
+                        <div className="flex items-center text-sm text-white/60">
                           <MapPin className="h-3 w-3 mr-1.5 sm:mr-2 flex-shrink-0" />
                           <span className="truncate">{event.location}</span>
                         </div>
@@ -545,7 +622,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                         }`}>
                           {event.frequency}
                         </span>
-                        <div className="flex items-center gap-1 text-xs text-white/50 font-medium">
+                        <div className="flex items-center gap-1 text-sm text-white/50 font-medium">
                           <Clock className="h-3 w-3" />
                           {event.commitment}
                         </div>
@@ -557,8 +634,8 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
             )}
           </motion.div>
 
-          {/* Event Detail Modal */}
-          <AnimatePresence>
+          {/* Desktop data source toggle - bottom left corner */}
+          <div className="hidden sm:block fixed bottom-6 left-6 z-20">
             {selectedEvent && (
               <motion.div
                 initial={{ opacity: 0 }}
