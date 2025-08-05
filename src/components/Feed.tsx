@@ -294,7 +294,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
         <div className="container mx-auto px-4 py-4">
           {/* Streamlined Mobile Header */}
           {isMobile && (
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 mb-4 mx-2">
+            <div
               {/* Streamlined User Greeting */}
               <div className="space-y-3">
                 {/* Horizontal Greeting */}
@@ -487,7 +487,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   Browse
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
           )}
 
