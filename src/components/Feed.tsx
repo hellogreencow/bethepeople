@@ -294,11 +294,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
         <div className="container mx-auto px-4 py-4">
           {/* Streamlined Mobile Header */}
           {isMobile && (
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 mx-4 mb-4"
-            >
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 mb-4 mx-2">
               {/* Streamlined User Greeting */}
               <div className="space-y-3">
                 {/* Horizontal Greeting */}
@@ -393,7 +389,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   )}
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* Compact Header Section */}
@@ -490,7 +486,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
 
           {/* Desktop-only data source toggle - moved to bottom left corner */}
           {!isMobile && (
-            {!isMobile && dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 && (
+            <div className="fixed bottom-6 left-6 z-20">
               {/* Pointing arrow and tooltip for Real button - shows automatically on first visit */}
               {dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 && (
                 <motion.div
