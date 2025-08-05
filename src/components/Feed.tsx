@@ -418,12 +418,19 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     <Zap className="h-4 w-4 text-yellow-400" />
                     <span className="text-sm font-medium">{user.stats.points}</span>
                   </div>
-                  <div className="w-px h-4 bg-white/20" />
+                <button
+                  onClick={() => {
+                    setTempLocation(user.preferences.location);
+                    setTempCoordinates(user.coordinates);
+                    setShowLocationSettings(true);
+                  }}
+                  className="flex items-center gap-1 text-white/60 bg-white/10 px-2 py-1 rounded-full hover:bg-white/20 transition-colors"
+                >
                   <div className="flex items-center gap-1">
                     <Heart className="h-4 w-4 text-pink-400" />
                     <span className="text-sm font-medium">{user.stats.matches}</span>
                   </div>
-                </div>
+                </button>
               )}
             </motion.div>
 

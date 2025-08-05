@@ -174,7 +174,7 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
   return (
     <div className="flex flex-col h-full">
       {/* Mobile Card Stack */}
-      <div className="flex-1 relative px-4 overflow-hidden">
+      <div className="flex-1 relative px-4 overflow-hidden mt-2">
         <div className="relative h-full">
           {/* Next card (background) */}
           {nextEvent && (
