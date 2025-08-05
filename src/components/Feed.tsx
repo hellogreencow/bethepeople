@@ -425,7 +425,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   </div>
                 </div>
               )}
-            </motion.div>
+                {/* Location Toggle - Clickable */}
 
             {/* Right side - View controls */}
             <motion.div
@@ -582,12 +582,19 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     onCardClick={setSelectedEvent}
                   />
                 ) : (
-                  <SwipeInterface
+                  <button 
+                    onClick={() => {
+                      setTempLocation(user.preferences.location);
+                      setTempCoordinates(user.coordinates);
+                      setShowLocationSettings(true);
+                    }}
+                    className="flex items-center gap-1 text-white/60 bg-white/10 px-2 py-1 rounded-full hover:bg-white/20 transition-colors active:scale-95"
+                  >
                     events={filteredEvents}
                     onMatch={handleMatch}
                     onSkip={handleSkip}
                     onCardClick={setSelectedEvent}
-                  />
+                  </button>
                 )}
               </div>
             ) : (
