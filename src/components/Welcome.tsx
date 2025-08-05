@@ -102,7 +102,7 @@ const Welcome: React.FC = () => {
             Where Volunteers Unite for Change
           </h2>
           <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of passionate volunteers making a real difference in communities worldwide. 
+            Join thousands of passionate volunteers making a real difference in communities across America. 
             Connect, contribute, and create lasting impact together.
           </p>
         </motion.div>
