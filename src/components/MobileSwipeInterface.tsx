@@ -174,7 +174,7 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
   return (
     <div className="flex flex-col h-full">
       {/* Mobile Card Stack */}
-      <div className="flex-1 relative p-4 overflow-hidden">
+      <div className="flex-1 relative px-4 overflow-hidden">
         <div className="relative h-full">
           {/* Next card (background) */}
           {nextEvent && (
@@ -206,7 +206,7 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
       </div>
 
       {/* Mobile Action Buttons - Larger for touch */}
-      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4 safe-area-inset-bottom">
+      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4 safe-area-inset-bottom rounded-t-2xl">
         <div className="flex justify-center items-center space-x-8">
           {/* Skip Button - Larger */}
           <motion.button
