@@ -28,9 +28,9 @@ const EventDetail: React.FC = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 pb-safe">
         <Navigation />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-4 md:py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Event not found</h1>
             <button
@@ -69,20 +69,20 @@ const EventDetail: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 relative z-0">
+    <div className="min-h-screen bg-gray-50 relative z-0 pb-safe">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8 relative z-10" style={{ paddingTop: 'max(2rem, env(safe-area-inset-top) + 5rem)' }}>
+      <div className="container mx-auto px-4 py-4 md:py-8 relative z-10" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top) + 4rem)' }}>
         {/* Back Button */}
         <button
           onClick={() => navigate('/feed')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-4 md:mb-6 transition-colors"
         >
           <ArrowLeft className="h-5 w-5 mr-2" />
           Back to opportunities
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Event Header */}
@@ -91,7 +91,7 @@ const EventDetail: React.FC = () => {
                 <img
                   src={event.imageUrl}
                   alt={event.title}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-48 md:h-64 object-cover"
                 />
                 <div className="absolute top-4 left-4 flex gap-2">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 ${
@@ -110,16 +110,16 @@ const EventDetail: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="p-4 md:p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{event.title}</h1>
-                    <p className="text-xl text-green-600 font-semibold">{event.organization}</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{event.title}</h1>
+                    <p className="text-lg md:text-xl text-green-600 font-semibold">{event.organization}</p>
                   </div>
                   <Heart className="h-6 w-6 text-gray-400 hover:text-red-500 transition-colors cursor-pointer" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 md:mb-6">
                   <div className="flex items-center text-gray-600">
                     <Calendar className="h-5 w-5 mr-3" />
                     <div>
@@ -153,12 +153,12 @@ const EventDetail: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-4 md:mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">About this opportunity</h3>
                   <p className="text-gray-700 leading-relaxed">{event.description}</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-3">What you'll need</h4>
                     <ul className="space-y-2">
@@ -185,7 +185,7 @@ const EventDetail: React.FC = () => {
                 </div>
 
                 {event.skillsNeeded.length > 0 && (
-                  <div className="mb-6">
+                  <div className="mb-4 md:mb-6">
                     <h4 className="font-semibold text-gray-900 mb-3">Skills needed</h4>
                     <div className="flex flex-wrap gap-2">
                       {event.skillsNeeded.map((skill, index) => (
@@ -204,9 +204,9 @@ const EventDetail: React.FC = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* RSVP Card */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-2xl font-bold text-gray-900">
@@ -268,7 +268,7 @@ const EventDetail: React.FC = () => {
             </div>
 
             {/* Contact Card */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Contact Organizer</h3>
               
               <div className="space-y-3">
@@ -304,7 +304,7 @@ const EventDetail: React.FC = () => {
             </div>
 
             {/* Organization Info */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
               <h3 className="font-semibold text-gray-900 mb-4">About {event.organization}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 Learn more about this organization and their mission to make a positive impact in the community.
