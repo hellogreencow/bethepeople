@@ -307,14 +307,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                 
                 {/* Real/Sample Toggle Buttons */}
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setTempLocation(user.preferences.location);
-                      setTempCoordinates(user.coordinates);
-                      setShowLocationSettings(true);
-                    }}
-                    className="flex items-center gap-1 text-white/60 bg-white/10 px-2 py-1 rounded-full hover:bg-white/20 transition-colors"
-                  >
+                  <motion.button
                     animate={dataSource === 'sample' && !isLoadingReal && realOpportunities.length === 0 ? {
                       boxShadow: [
                         '0 0 0 0 rgba(34, 197, 94, 0)',
@@ -594,7 +587,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     onMatch={handleMatch}
                     onSkip={handleSkip}
                     onCardClick={setSelectedEvent}
-                  </button>
+                  />
                 )}
               </div>
             ) : (
