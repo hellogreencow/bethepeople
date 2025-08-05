@@ -81,7 +81,7 @@ const Welcome: React.FC = () => {
           className="mb-8"
         >
           <div className="inline-flex items-center bg-white/10 text-white border border-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-            <span className="mr-2 text-base">&#127482;&#127480;</span>
+            <img width="20" height="20" src="https://img.icons8.com/clouds/100/usa.png" alt="usa" className="mr-2" />
             <span className="text-sm font-medium">Empowering Communities Across America</span>
           </div>
         </motion.div>
