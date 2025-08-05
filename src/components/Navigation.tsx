@@ -70,8 +70,16 @@ const Navigation: React.FC<NavigationProps> = ({ onOpenAIChat }) => {
           {/* User Info & Mobile AI Chat */}
           <div className="flex items-center space-x-4">
             {/* Mobile AI Chat Button */}
+            <button
+              onClick={onOpenAIChat}
+              className="md:hidden flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg transition-all"
+            >
+              <MessageCircle className="h-5 w-5" />
+              <span className="text-sm font-medium">Chat</span>
+            </button>
+            
             {user && (
-              <div className="flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-3">
                 <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full w-10 h-10 flex items-center justify-center">
                   <span className="text-white font-semibold">
                     {user.name.charAt(0).toUpperCase()}
@@ -80,19 +88,34 @@ const Navigation: React.FC<NavigationProps> = ({ onOpenAIChat }) => {
                 <span className="text-white font-medium">{user.name}</span>
               </div>
             )}
-            
-            {/* Mobile AI Chat Button */}
-            <button
-              onClick={onOpenAIChat}
-              className="md:hidden flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg transition-all"
-            >
-              <MessageCircle className="h-5 w-5" />
-              <span className="text-sm font-medium">Chat</span>
-            </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
+        <div className="md:hidden border-t border-white/20">
+          <div className="flex justify-around py-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => {
+                    navigate(item.path);
+                  }}
+                  className={`flex flex-col items-center py-2 px-4 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-xs font-medium mt-1">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
     </nav>
