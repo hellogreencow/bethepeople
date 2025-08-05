@@ -336,6 +336,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
           )}
 
           {/* Compact Header Section */}
+          {!isMobile && (
           <div className="flex items-center justify-between mb-4">
             {/* Left side - Greeting and mini stats */}
             <motion.div
@@ -424,6 +425,7 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
               </div>
             </motion.div>
           </div>
+          )}
 
           {/* Subtle data source toggle - moved to bottom left corner */}
           <div className="fixed bottom-6 left-6 z-20">
