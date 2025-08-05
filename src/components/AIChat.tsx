@@ -386,7 +386,7 @@ Remember: You are NOT a general chatbot - you are a VOLUNTEER OPPORTUNITY SPECIA
                     : 'bg-gray-800 text-white border border-white/20'
                 }`}>
                   <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-                 <div className={`rounded-full p-2 flex-shrink-0 ${
+                    {parseMarkdown(message.content)}
                   </p>
                   <p className={`text-xs mt-2 ${
                     message.role === 'user' ? 'text-white/50' : 'text-white/50'
@@ -407,13 +407,13 @@ Remember: You are NOT a general chatbot - you are a VOLUNTEER OPPORTUNITY SPECIA
           {isLoading && (
             <div className="flex justify-start">
               <div className="flex items-start space-x-3">
-                <div className="bg-gray-800 rounded-full p-2 border border-white/20">
-                  <Bot className="h-3 w-3 md:h-4 md:w-4 text-white animate-pulse" />
+                <div className="bg-gray-800 rounded-full p-3 border border-white/20">
+                  <Bot className="h-4 w-4 md:h-5 md:w-5 text-white animate-pulse" />
                 </div>
                 <div className="bg-gray-800 rounded-2xl px-3 py-2 md:px-5 md:py-3 border border-white/20">
-                     <User className="h-3 w-3 md:h-4 md:w-4 text-white" />
+                  <div className="flex space-x-1">
                     <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce"></div>
-                     <Bot className="h-3 w-3 md:h-4 md:w-4 text-white" />
+                    <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                     <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 </div>
