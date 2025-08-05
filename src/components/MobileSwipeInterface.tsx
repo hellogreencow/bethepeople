@@ -320,26 +320,37 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
           </div>
         </div>
 
-        {/* Mobile Content - Better titles */}
-        <div className="p-5 space-y-3">
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold text-gray-900 leading-tight">
+        {/* Mobile Content - More compact */}
+        <div className="p-6 space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent leading-tight">
               {event.title}
             </h2>
-            <p className="text-base font-semibold text-purple-600">
+            <p className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {event.organization}
             </p>
           </div>
 
-          <p className="text-gray-600 line-clamp-2 leading-relaxed text-sm">
+          <p className="text-gray-700 line-clamp-3 leading-relaxed text-base">
             {event.description}
           </p>
 
-          {/* Compact info - single row */}
-          <div className="flex justify-between items-center text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">
-            <span>📅 {event.date}</span>
-            <span>👥 {event.spotsAvailable} spots</span>
-            <span className="truncate max-w-16">📍 {event.location.split(',')[0]}</span>
+          {/* Mobile info grid - Simplified */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg px-3 py-3">
+              <span className="text-2xl mr-3">📅</span>
+              <div>
+                <p className="text-xs text-gray-500">Date</p>
+                <p className="text-sm font-medium">{event.date}</p>
+              </div>
+            </div>
+            <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg px-3 py-3">
+              <span className="text-2xl mr-3">👥</span>
+              <div>
+                <p className="text-xs text-gray-500">Spots</p>
+                <p className="text-sm font-medium">{event.spotsAvailable} left</p>
+              </div>
+            </div>
           </div>
 
           {/* Streamlined Mobile Header */}
