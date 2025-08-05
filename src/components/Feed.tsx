@@ -6,7 +6,9 @@ import { quickSearch, searchByUserInterests } from '../services/opportunityAggre
 import { calculateDistance } from '../services/locationService';
 import Navigation from './Navigation';
 import SwipeInterface from './SwipeInterface';
+import MobileSwipeInterface from './MobileSwipeInterface';
 import GamificationStats from './GamificationStats';
+import { useMobile } from '../hooks/useMobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import LocationInput from './LocationInput';
 import { 
@@ -23,6 +25,7 @@ interface FeedProps {
 const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
   const navigate = useNavigate();
   const { user, setUser, updateStats, incrementStreak } = useUser();
+  const { isMobile, isTouch } = useMobile();
   const [selectedEvent, setSelectedEvent] = useState<VolunteerEvent | null>(null);
   const [realOpportunities, setRealOpportunities] = useState<VolunteerEvent[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(false);
@@ -463,19 +466,30 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="relative"
-            style={{ height: 'calc(100vh - 200px)' }}
+            style={{ height: isMobile ? 'calc(100vh - 160px)' : 'calc(100vh - 200px)' }}
           >
             {viewMode === 'swipe' ? (
               <div className="h-full">
-                <SwipeInterface
-                  events={filteredEvents}
-                  onMatch={handleMatch}
-                  onSkip={handleSkip}
-                  onCardClick={setSelectedEvent}
-                />
+                {isMobile ? (
+                  <MobileSwipeInterface
+                    events={filteredEvents}
+                    onMatch={handleMatch}
+                    onSkip={handleSkip}
+                    onCardClick={setSelectedEvent}
+                  />
+                ) : (
+                  <SwipeInterface
+                    events={filteredEvents}
+                    onMatch={handleMatch}
+                    onSkip={handleSkip}
+                    onCardClick={setSelectedEvent}
+                  />
+                )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-full pb-20">
+              <div className={`grid gap-6 overflow-y-auto max-h-full pb-20 ${
+                isMobile ? 'grid-cols-1 px-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              }`}>
                 {filteredEvents.map((event, index) => (
                   <motion.div
                     key={event.id}
@@ -483,14 +497,18 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                     whileHover={{ y: -5, scale: 1.02 }}
-                    className="bg-white/10 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/20 hover:border-white/40 transition-all cursor-pointer group shadow-lg"
+                    className={`bg-white/10 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/20 hover:border-white/40 transition-all cursor-pointer group shadow-lg ${
+                      isMobile ? 'active:scale-95' : ''
+                    }`}
                     onClick={() => setSelectedEvent(event)}
                   >
                     <div className="relative">
                       <img
                         src={event.imageUrl}
                         alt={event.title}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+                          isMobile ? 'h-40' : 'h-48'
+                        }`}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       <div className="absolute top-3 left-3">
@@ -509,35 +527,37 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                       )}
                     </div>
 
-                    <div className="p-5 space-y-3">
+                    <div className={`space-y-3 ${isMobile ? 'p-4' : 'p-5'}`}>
                       <div>
-                        <h3 className="text-lg font-semibold text-white mb-1">
+                        <h3 className={`font-semibold text-white mb-1 ${isMobile ? 'text-base' : 'text-lg'}`}>
                           {event.title}
                         </h3>
-                        <p className="text-purple-300 font-medium text-sm">{event.organization}</p>
+                        <p className={`text-purple-300 font-medium ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                          {event.organization}
+                        </p>
                       </div>
 
-                      <p className="text-white/70 text-sm line-clamp-2">
+                      <p className={`text-white/70 line-clamp-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>
                         {event.description}
                       </p>
 
                       <div className="space-y-2">
-                        <div className="flex items-center text-xs text-white/60">
+                        <div className={`flex items-center text-white/60 ${isMobile ? 'text-xs' : 'text-xs'}`}>
                           <Calendar className="h-3 w-3 mr-2" />
                           {event.date}
                         </div>
-                        <div className="flex items-center text-xs text-white/60">
+                        <div className={`flex items-center text-white/60 ${isMobile ? 'text-xs' : 'text-xs'}`}>
                           <MapPin className="h-3 w-3 mr-2" />
                           <span className="truncate">{event.location}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between pt-2">
-                        <div className="flex items-center text-xs text-white/60">
+                        <div className={`flex items-center text-white/60 ${isMobile ? 'text-xs' : 'text-xs'}`}>
                           <Users className="h-3 w-3 mr-1" />
                           <span>{event.spotsAvailable} spots</span>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        <span className={`px-2 py-1 rounded-full font-medium ${isMobile ? 'text-xs' : 'text-xs'} ${
                           event.frequency === 'one-time' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
                           event.frequency === 'weekly' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
                           event.frequency === 'monthly' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
@@ -572,18 +592,21 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   className="bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl"
                   onClick={(e) => e.stopPropagation()}
                 >
+                  {/* Mobile-optimized modal content */}
                   {/* Modal content */}
                   <div className="relative">
                     <img
                       src={selectedEvent.imageUrl}
                       alt={selectedEvent.title}
-                      className="w-full h-64 object-cover rounded-t-2xl"
+                      className={`w-full object-cover rounded-t-2xl ${isMobile ? 'h-48' : 'h-64'}`}
                     />
                     <button
                       onClick={() => setSelectedEvent(null)}
-                      className="absolute top-4 right-4 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors backdrop-blur-sm"
+                      className={`absolute top-4 right-4 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors backdrop-blur-sm ${
+                        isMobile ? 'p-3' : 'p-2'
+                      }`}
                     >
-                      <X className="h-5 w-5" />
+                      <X className={isMobile ? 'h-6 w-6' : 'h-5 w-5'} />
                     </button>
                     
                     {/* Type and Distance Badges */}
@@ -611,46 +634,59 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                     </div>
                   </div>
 
-                  <div className="p-8 text-white">
+                  <div className={`text-white ${isMobile ? 'p-4' : 'p-8'}`}>
                     {/* Header with share/save buttons */}
-                    <div className="flex justify-between items-start mb-6">
+                    <div className={`flex justify-between items-start ${isMobile ? 'mb-4' : 'mb-6'}`}>
                       <div>
-                        <h1 className="text-3xl font-bold mb-2">{selectedEvent.title}</h1>
-                        <p className="text-xl text-purple-300 font-semibold">{selectedEvent.organization}</p>
+                        <h1 className={`font-bold mb-2 ${isMobile ? 'text-xl' : 'text-3xl'}`}>
+                          {selectedEvent.title}
+                        </h1>
+                        <p className={`text-purple-300 font-semibold ${isMobile ? 'text-lg' : 'text-xl'}`}>
+                          {selectedEvent.organization}
+                        </p>
                       </div>
-                      <div className="flex gap-2">
-                        <button className="p-2 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-colors">
-                          <Heart className="h-5 w-5" />
+                      <div className={`flex gap-2 ${isMobile ? 'flex-col' : ''}`}>
+                        <button className={`bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-colors ${
+                          isMobile ? 'p-3' : 'p-2'
+                        }`}>
+                          <Heart className={isMobile ? 'h-6 w-6' : 'h-5 w-5'} />
                         </button>
-                        <button className="p-2 bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-colors">
-                          <Star className="h-5 w-5" />
+                        <button className={`bg-white/10 backdrop-blur-sm rounded-lg hover:bg-white/20 transition-colors ${
+                          isMobile ? 'p-3' : 'p-2'
+                        }`}>
+                          <Star className={isMobile ? 'h-6 w-6' : 'h-5 w-5'} />
                         </button>
                       </div>
                     </div>
                     
                     {/* Key Details Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                    <div className={`grid gap-4 mb-6 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 ${
+                      isMobile ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-4'
+                    }`}>
                       <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-purple-400" />
+                        <Calendar className={`text-purple-400 ${isMobile ? 'h-6 w-6' : 'h-5 w-5'}`} />
                         <div>
-                          <p className="text-xs text-white/60">Date</p>
-                          <p className="text-sm font-medium">{selectedEvent.date}</p>
+                          <p className={`text-white/60 ${isMobile ? 'text-xs' : 'text-xs'}`}>Date</p>
+                          <p className={`font-medium ${isMobile ? 'text-sm' : 'text-sm'}`}>{selectedEvent.date}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-blue-400" />
+                        <Clock className={`text-blue-400 ${isMobile ? 'h-6 w-6' : 'h-5 w-5'}`} />
                         <div>
-                          <p className="text-xs text-white/60">Time</p>
-                          <p className="text-sm font-medium">{selectedEvent.time}</p>
+                          <p className={`text-white/60 ${isMobile ? 'text-xs' : 'text-xs'}`}>Time</p>
+                          <p className={`font-medium ${isMobile ? 'text-sm' : 'text-sm'}`}>{selectedEvent.time}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <MapPin className="h-5 w-5 text-green-400" />
+                      <div className={`flex items-center gap-3 ${isMobile ? 'col-span-2' : ''}`}>
+                        <MapPin className={`text-green-400 ${isMobile ? 'h-6 w-6' : 'h-5 w-5'}`} />
                         <div>
-                          <p className="text-xs text-white/60">Location</p>
-                          <p className="text-sm font-medium truncate">{(selectedEvent as any).distance ? `${(selectedEvent as any).distance.toFixed(1)} mi away` : selectedEvent.type}</p>
+                          <p className={`text-white/60 ${isMobile ? 'text-xs' : 'text-xs'}`}>Location</p>
+                          <p className={`font-medium ${isMobile ? 'text-sm truncate' : 'text-sm truncate'}`}>
+                            {(selectedEvent as any).distance ? `${(selectedEvent as any).distance.toFixed(1)} mi away` : selectedEvent.type}
+                          </p>
                         </div>
                       </div>
+                      {!isMobile && (
                       <div className="flex items-center gap-3">
                         <Users className="h-5 w-5 text-orange-400" />
                         <div>
@@ -658,35 +694,36 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                           <p className="text-sm font-medium">{selectedEvent.spotsAvailable} left</p>
                         </div>
                       </div>
+                      )}
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                      <div className="lg:col-span-2 space-y-6">
+                    <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
+                      <div className={`space-y-6 ${isMobile ? '' : 'lg:col-span-2'}`}>
                         <div className="prose prose-invert max-w-none">
-                          <p className="text-white/80 leading-relaxed">
+                          <p className={`text-white/80 leading-relaxed ${isMobile ? 'text-sm' : ''}`}>
                             {selectedEvent.description}
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
                           <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <h4 className="font-semibold mb-3">What you'll need</h4>
+                            <h4 className={`font-semibold mb-3 ${isMobile ? 'text-sm' : ''}`}>What you'll need</h4>
                             <ul className="space-y-2">
                               {selectedEvent.requirements.map((req, index) => (
                                 <li key={index} className="flex items-start">
                                   <Check className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
-                                  <span className="text-white/80 text-sm">{req}</span>
+                                  <span className={`text-white/80 ${isMobile ? 'text-xs' : 'text-sm'}`}>{req}</span>
                                 </li>
                               ))}
                             </ul>
                           </div>
                           <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <h4 className="font-semibold mb-3">What you'll gain</h4>
+                            <h4 className={`font-semibold mb-3 ${isMobile ? 'text-sm' : ''}`}>What you'll gain</h4>
                             <ul className="space-y-2">
                               {selectedEvent.benefits.map((benefit, index) => (
                                 <li key={index} className="flex items-start">
                                   <Heart className="h-5 w-5 text-pink-400 mr-2 mt-0.5 flex-shrink-0" />
-                                  <span className="text-white/80 text-sm">{benefit}</span>
+                                  <span className={`text-white/80 ${isMobile ? 'text-xs' : 'text-sm'}`}>{benefit}</span>
                                 </li>
                               ))}
                             </ul>
@@ -696,15 +733,17 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                         {/* Skills Needed Section */}
                         {selectedEvent.skillsNeeded && selectedEvent.skillsNeeded.length > 0 && (
                           <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <h4 className="font-semibold mb-3 flex items-center gap-2">
-                              <Target className="h-5 w-5 text-purple-400" />
+                            <h4 className={`font-semibold mb-3 flex items-center gap-2 ${isMobile ? 'text-sm' : ''}`}>
+                              <Target className={`text-purple-400 ${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
                               Skills Needed
                             </h4>
                             <div className="flex flex-wrap gap-2">
                               {selectedEvent.skillsNeeded.map((skill, index) => (
                                 <span
                                   key={index}
-                                  className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm border border-purple-500/30"
+                                  className={`px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30 ${
+                                    isMobile ? 'text-xs' : 'text-sm'
+                                  }`}
                                 >
                                   {skill}
                                 </span>
@@ -715,40 +754,43 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                         
                         {/* Location Details */}
                         <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2">
-                            <MapPin className="h-5 w-5 text-green-400" />
+                          <h4 className={`font-semibold mb-3 flex items-center gap-2 ${isMobile ? 'text-sm' : ''}`}>
+                            <MapPin className={`text-green-400 ${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
                             Location Details
                           </h4>
-                          <p className="text-white/80 text-sm mb-2">{selectedEvent.location}</p>
+                          <p className={`text-white/80 mb-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                            {selectedEvent.location}
+                          </p>
                           <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-sm text-white/60">
-                              <Clock className="h-4 w-4" />
+                            <div className={`flex items-center gap-2 text-white/60 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                              <Clock className={isMobile ? 'h-3 w-3' : 'h-4 w-4'} />
                               <span>Commitment: {selectedEvent.commitment}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-white/60">
-                              <RotateCcw className="h-4 w-4" />
+                            <div className={`flex items-center gap-2 text-white/60 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                              <RotateCcw className={isMobile ? 'h-3 w-3' : 'h-4 w-4'} />
                               <span>Frequency: {selectedEvent.frequency}</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
+                      {/* Desktop sidebar or mobile bottom section */}
                       <div className="space-y-4">
                         <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-6 border border-purple-500/30 backdrop-blur-sm">
                           <div className="mb-4">
-                            <span className="text-2xl font-bold">
+                            <span className={`font-bold ${isMobile ? 'text-xl' : 'text-2xl'}`}>
                               {selectedEvent.spotsAvailable > 0 ? 'Join us!' : 'Full'}
                             </span>
                           </div>
                           
                           {selectedEvent.spotsAvailable > 0 && (
                             <>
-                              <p className="text-white/80 mb-3">
+                              <p className={`text-white/80 mb-3 ${isMobile ? 'text-sm' : ''}`}>
                                 {selectedEvent.spotsAvailable} spots remaining
                               </p>
                               <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg p-3 mb-3 border border-green-500/30">
-                                <div className="flex items-center gap-2 text-sm text-green-300">
-                                  <Zap className="h-4 w-4" />
+                                <div className={`flex items-center gap-2 text-green-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                                  <Zap className={isMobile ? 'h-3 w-3' : 'h-4 w-4'} />
                                   <span className="font-medium">+50 points for RSVP!</span>
                                 </div>
                               </div>
@@ -766,9 +808,11 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                                   });
                                   setSelectedEvent(null);
                                 }}
-                                className="w-full py-3 px-4 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-2"
+                                className={`w-full rounded-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-2 ${
+                                  isMobile ? 'py-4 px-4 text-lg' : 'py-3 px-4'
+                                }`}
                               >
-                                <Check className="h-5 w-5" />
+                                <Check className={isMobile ? 'h-6 w-6' : 'h-5 w-5'} />
                                 RSVP Now
                               </button>
                               
@@ -779,9 +823,11 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                                   const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(selectedEvent.title)}&dates=${eventDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}/${endDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}&details=${encodeURIComponent(selectedEvent.description)}&location=${encodeURIComponent(selectedEvent.location)}`;
                                   window.open(calendarUrl, '_blank');
                                 }}
-                                className="w-full py-2 px-4 rounded-lg font-medium bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all border border-white/20 flex items-center justify-center gap-2"
+                                className={`w-full rounded-lg font-medium bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all border border-white/20 flex items-center justify-center gap-2 ${
+                                  isMobile ? 'py-3 px-4' : 'py-2 px-4'
+                                }`}
                               >
-                                <Calendar className="h-4 w-4" />
+                                <Calendar className={isMobile ? 'h-5 w-5' : 'h-4 w-4'} />
                                 Add to Calendar
                               </button>
                             </>
@@ -789,20 +835,20 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                         </div>
 
                         <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                          <h3 className="font-semibold mb-4">Contact Organizer</h3>
-                          <div className="space-y-3 text-sm">
+                          <h3 className={`font-semibold mb-4 ${isMobile ? 'text-sm' : ''}`}>Contact Organizer</h3>
+                          <div className={`space-y-3 ${isMobile ? 'text-xs' : 'text-sm'}`}>
                             <div className="flex items-center">
-                              <User className="h-5 w-5 text-white/40 mr-3" />
+                              <User className={`text-white/40 mr-3 ${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
                               <span className="text-white/80">{selectedEvent.contact.name}</span>
                             </div>
                             <div className="flex items-center">
-                              <Mail className="h-5 w-5 text-white/40 mr-3" />
-                              <a href={`mailto:${selectedEvent.contact.email}`} className="text-purple-300 hover:text-purple-200">
+                              <Mail className={`text-white/40 mr-3 ${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
+                              <a href={`mailto:${selectedEvent.contact.email}`} className="text-purple-300 hover:text-purple-200 break-all">
                                 {selectedEvent.contact.email}
                               </a>
                             </div>
                             <div className="flex items-center">
-                              <Phone className="h-5 w-5 text-white/40 mr-3" />
+                              <Phone className={`text-white/40 mr-3 ${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
                               <a href={`tel:${selectedEvent.contact.phone}`} className="text-purple-300 hover:text-purple-200">
                                 {selectedEvent.contact.phone}
                               </a>

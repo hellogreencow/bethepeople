@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { useMobile } from '../hooks/useMobile';
 import { Home, User, MessageCircle } from 'lucide-react';
 
 interface NavigationProps {
