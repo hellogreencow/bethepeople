@@ -19,7 +19,8 @@ import {
   TrendingUp,
   Clock,
   Zap,
-  Heart
+  Heart,
+  Star
 } from 'lucide-react';
 
 interface FeedProps {
