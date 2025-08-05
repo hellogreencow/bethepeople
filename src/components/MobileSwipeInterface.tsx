@@ -174,11 +174,11 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
   return (
     <div className="flex flex-col h-full">
       {/* Mobile Card Stack */}
-      <div className="flex-1 relative px-4 overflow-hidden">
+      <div className="flex-1 relative overflow-hidden">
         <div className="relative h-full">
           {/* Next card (background) */}
           {nextEvent && (
-            <div className="absolute inset-0 scale-95 opacity-60 rounded-3xl">
+            <div className="absolute inset-4 scale-95 opacity-60 rounded-3xl">
               <MobileCard event={nextEvent} />
             </div>
           )}
@@ -187,7 +187,7 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
           {currentEvent && (
             <div
               ref={cardRef}
-              className="absolute inset-0 cursor-grab active:cursor-grabbing touch-pan-y"
+              className="absolute inset-4 cursor-grab active:cursor-grabbing touch-pan-y"
               style={{
                 transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg) scale(${scale})`,
                 opacity,
