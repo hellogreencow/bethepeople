@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { motion } from 'framer-motion';
-import { Users, TrendingUp, Award, ArrowRight, Heart, Star, CheckCircle, Globe, Zap, Shield } from 'lucide-react';
+import { Users, TrendingUp, Award, ArrowRight, Heart, Star, CheckCircle, Globe, Zap, Shield, Flag } from 'lucide-react';
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
@@ -81,8 +81,8 @@ const Welcome: React.FC = () => {
           className="mb-8"
         >
           <div className="inline-flex items-center bg-white/10 text-white border border-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-            <Star className="w-4 h-4 mr-2 text-yellow-400" />
-            <span className="text-sm font-medium">Empowering Communities Worldwide</span>
+            <Flag className="w-4 h-4 mr-2 text-red-400" />
+            <span className="text-sm font-medium">Empowering Communities Across America</span>
           </div>
         </motion.div>
 
