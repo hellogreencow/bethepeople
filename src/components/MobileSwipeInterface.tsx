@@ -320,52 +320,42 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
           </div>
         </div>
 
-        {/* Mobile Content - More compact */}
-        <div className="p-6 space-y-4">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent leading-tight">
+        {/* Mobile Content - Better titles */}
+        <div className="p-5 space-y-3">
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold text-gray-900 leading-tight">
               {event.title}
             </h2>
-            <p className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <p className="text-base font-semibold text-purple-600">
               {event.organization}
             </p>
           </div>
 
-          <p className="text-gray-700 line-clamp-3 leading-relaxed text-base">
+          <p className="text-gray-600 line-clamp-2 leading-relaxed text-sm">
             {event.description}
           </p>
 
-          {/* Mobile info grid - Simplified */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg px-3 py-3">
-              <span className="text-2xl mr-3">📅</span>
-              <div>
-                <p className="text-xs text-gray-500">Date</p>
-                <p className="text-sm font-medium">{event.date}</p>
-              </div>
-            </div>
-            <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg px-3 py-3">
-              <span className="text-2xl mr-3">👥</span>
-              <div>
-                <p className="text-xs text-gray-500">Spots</p>
-                <p className="text-sm font-medium">{event.spotsAvailable} left</p>
-              </div>
-            </div>
+          {/* Compact info - single row */}
+          <div className="flex justify-between items-center text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">
+            <span>📅 {event.date}</span>
+            <span>👥 {event.spotsAvailable} spots</span>
+            <span className="truncate max-w-16">📍 {event.location.split(',')[0]}</span>
           </div>
 
-          {/* Mobile bottom section */}
-          <div className="flex justify-between items-center pt-2">
-            <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-sm ${
-              event.frequency === 'one-time' ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800' :
-              event.frequency === 'weekly' ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800' :
-              event.frequency === 'monthly' ? 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800' :
-              'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800'
-            }`}>
-              {event.frequency}
-            </span>
-            <div className="flex items-center gap-1 text-sm text-gray-500 font-medium">
-              <span className="text-lg">⚡</span>
-              <span className="truncate max-w-24">{event.commitment}</span>
+        {/* Streamlined Mobile Header */}
+        <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-4 pb-3">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-lg font-bold text-white">Discover</h1>
+            <div className="flex items-center gap-2">
+              <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                {currentIndex + 1} of {events.length}
+              </span>
+              {user?.preferences.location && (
+                <div className="text-xs text-white/60 flex items-center gap-1">
+                  <span>📍</span>
+                  <span className="truncate max-w-20">{user.preferences.location.split(',')[0]}...</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -67,8 +67,16 @@ const Navigation: React.FC<NavigationProps> = ({ onOpenAIChat }) => {
             </button>
           </div>
 
-          {/* User Info */}
+          {/* User Info & Mobile AI Chat */}
           <div className="flex items-center space-x-4">
+            {/* Mobile AI Chat Button */}
+            <button
+              onClick={onOpenAIChat}
+              className="md:hidden p-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg transition-all"
+            >
+              <MessageCircle className="h-5 w-5" />
+            </button>
+            
             {user && (
               <div className="hidden md:flex items-center space-x-3">
                 <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full w-10 h-10 flex items-center justify-center">
