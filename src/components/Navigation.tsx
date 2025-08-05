@@ -72,9 +72,10 @@ const Navigation: React.FC<NavigationProps> = ({ onOpenAIChat }) => {
             {/* Mobile AI Chat Button */}
             <button
               onClick={onOpenAIChat}
-              className="md:hidden p-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg transition-all"
+              className="md:hidden flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg transition-all"
             >
               <MessageCircle className="h-5 w-5" />
+              <span className="text-sm font-medium">Chat</span>
             </button>
             
             {user && (

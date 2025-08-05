@@ -173,29 +173,12 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Mobile Header */}
-      <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-white">Discover</h1>
-          <div className="flex items-center gap-3">
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-              {currentIndex + 1} of {events.length}
-            </span>
-            {user?.preferences.location && (
-              <div className="text-sm text-white/70 truncate max-w-24">
-                📍 {user.preferences.location.split(',')[0]}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Mobile Card Stack */}
-      <div className="flex-1 relative p-4 overflow-hidden">
+      <div className="flex-1 relative p-6 overflow-hidden">
         <div className="relative h-full">
           {/* Next card (background) */}
           {nextEvent && (
-            <div className="absolute inset-0 scale-95 opacity-60">
+            <div className="absolute inset-0 scale-95 opacity-60 rounded-3xl">
               <MobileCard event={nextEvent} />
             </div>
           )}
@@ -216,14 +199,14 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
               onClick={() => !isDragging && onCardClick && onCardClick(currentEvent)}
             >
               {getSwipeIndicator()}
-              <MobileCard event={currentEvent} />
+              <MobileCard event={currentEvent} showTitle={true} />
             </div>
           )}
         </div>
       </div>
 
       {/* Mobile Action Buttons - Larger for touch */}
-      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-6 safe-area-inset-bottom">
+      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-6 safe-area-inset-bottom rounded-t-3xl">
         <div className="flex justify-center items-center space-x-8">
           {/* Skip Button - Larger */}
           <motion.button
@@ -274,12 +257,26 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
 };
 
 // Mobile-optimized card component
-const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
+const MobileCard: React.FC<{ event: VolunteerEvent; showTitle?: boolean }> = ({ event, showTitle = false }) => {
   return (
-    <div className="h-full bg-gradient-to-br from-white via-white to-gray-50 rounded-3xl overflow-hidden shadow-2xl border-2 border-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-[2px]">
+    <div className="h-full bg-gradient-to-br from-white via-white to-gray-50 rounded-3xl overflow-hidden shadow-2xl border-2 border-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-[3px]">
       <div className="h-full bg-white rounded-3xl overflow-hidden relative">
+        {/* Card Title - Only show on main card */}
+        {showTitle && (
+          <div className="absolute top-4 left-4 right-4 z-10">
+            <div className="bg-black/60 backdrop-blur-sm rounded-2xl px-4 py-3 border border-white/20">
+              <h2 className="text-lg font-bold text-white leading-tight">
+                {event.title}
+              </h2>
+              <p className="text-sm text-white/80 font-medium">
+                {event.organization}
+              </p>
+            </div>
+          </div>
+        )}
+        
         {/* Mobile Image Section - Larger */}
-        <div className="relative h-72 overflow-hidden">
+        <div className="relative h-72 overflow-hidden rounded-t-3xl">
           <img
             src={event.imageUrl}
             alt={event.title}
@@ -290,7 +287,7 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
           
           {/* Mobile badges */}
-          <div className="absolute top-4 left-4 flex gap-2">
+          <div className={`absolute ${showTitle ? 'top-24' : 'top-4'} left-4 flex gap-2`}>
             <span className={`px-3 py-2 rounded-full text-sm font-bold text-white backdrop-blur-sm shadow-lg ${
               event.type === 'virtual' ? 'bg-blue-500/90' :
               event.type === 'hybrid' ? 'bg-purple-500/90' :
@@ -308,43 +305,45 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
           
           {/* Distance badge */}
           {(event as any).distance && (
-            <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-2 rounded-full text-sm font-bold backdrop-blur-sm shadow-lg">
+            <div className={`absolute ${showTitle ? 'top-24' : 'top-4'} right-4 bg-black/70 text-white px-3 py-2 rounded-full text-sm font-bold backdrop-blur-sm shadow-lg`}>
               {(event as any).distance.toFixed(1)} mi
             </div>
           )}
 
           {/* Match percentage */}
-          <div className="absolute bottom-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-2 rounded-full text-sm font-bold backdrop-blur-sm shadow-lg flex items-center gap-1">
+          <div className="absolute bottom-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-2 rounded-2xl text-sm font-bold backdrop-blur-sm shadow-lg flex items-center gap-1">
             <Star className="h-4 w-4 fill-current" />
             {Math.floor((event.id.charCodeAt(0) + event.id.charCodeAt(1)) % 30) + 70}%
           </div>
         </div>
 
         {/* Mobile Content - More compact */}
-        <div className="p-6 space-y-4">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent leading-tight">
-              {event.title}
-            </h2>
-            <p className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {event.organization}
-            </p>
-          </div>
+        <div className="p-6 space-y-5">
+          {!showTitle && (
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent leading-tight">
+                {event.title}
+              </h2>
+              <p className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                {event.organization}
+              </p>
+            </div>
+          )}
 
-          <p className="text-gray-700 line-clamp-3 leading-relaxed text-base">
+          <p className="text-gray-700 line-clamp-3 leading-relaxed text-base mt-4">
             {event.description}
           </p>
 
           {/* Mobile info grid - Simplified */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg px-3 py-3">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center text-gray-600 bg-gray-50 rounded-2xl px-4 py-3">
               <span className="text-2xl mr-3">📅</span>
               <div>
                 <p className="text-xs text-gray-500">Date</p>
                 <p className="text-sm font-medium">{event.date}</p>
               </div>
             </div>
-            <div className="flex items-center text-gray-600 bg-gray-50 rounded-lg px-3 py-3">
+            <div className="flex items-center text-gray-600 bg-gray-50 rounded-2xl px-4 py-3">
               <span className="text-2xl mr-3">👥</span>
               <div>
                 <p className="text-xs text-gray-500">Spots</p>
@@ -355,11 +354,11 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
 
           {/* Streamlined Mobile Header */}
           {/* Skills and commitment */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="flex flex-wrap gap-2">
             {event.skillsNeeded.slice(0, 2).map((skill, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-full text-xs font-medium border border-blue-200"
+                className="px-3 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-2xl text-xs font-medium border border-blue-200"
               >
                 {skill}
               </span>
@@ -368,7 +367,7 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
           
           {/* Bottom row */}
           <div className="flex justify-between items-center">
-            <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${
+            <span className={`px-4 py-2 rounded-2xl text-xs font-bold shadow-sm ${
               event.frequency === 'one-time' ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300' :
               event.frequency === 'weekly' ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300' :
               event.frequency === 'monthly' ? 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border border-purple-300' :

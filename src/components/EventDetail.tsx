@@ -69,10 +69,10 @@ const EventDetail: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative z-0">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 relative z-10" style={{ paddingTop: 'max(2rem, env(safe-area-inset-top) + 5rem)' }}>
         {/* Back Button */}
         <button
           onClick={() => navigate('/feed')}
