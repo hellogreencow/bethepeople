@@ -354,20 +354,31 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
           </div>
 
           {/* Streamlined Mobile Header */}
-          <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-4 pb-3">
-            <div className="flex items-center justify-between mb-3">
-              <h1 className="text-lg font-bold text-white">Discover</h1>
-              <div className="flex items-center gap-2">
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-bold">
-                  {currentIndex + 1} of {events.length}
-                </span>
-                {user?.preferences.location && (
-                  <div className="text-xs text-white/60 flex items-center gap-1">
-                    <span>📍</span>
-                    <span className="truncate max-w-20">{user.preferences.location.split(',')[0]}...</span>
-                  </div>
-                )}
-              </div>
+          {/* Skills and commitment */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {event.skillsNeeded.slice(0, 2).map((skill, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-full text-xs font-medium border border-blue-200"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+          
+          {/* Bottom row */}
+          <div className="flex justify-between items-center">
+            <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${
+              event.frequency === 'one-time' ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300' :
+              event.frequency === 'weekly' ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300' :
+              event.frequency === 'monthly' ? 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border border-purple-300' :
+              'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300'
+            }`}>
+              {event.frequency}
+            </span>
+            <div className="flex items-center gap-1 text-xs text-gray-500 font-medium">
+              <span>⚡</span>
+              {event.commitment}
             </div>
           </div>
         </div>
