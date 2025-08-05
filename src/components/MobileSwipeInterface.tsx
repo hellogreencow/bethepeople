@@ -342,20 +342,21 @@ const MobileCard: React.FC<{ event: VolunteerEvent }> = ({ event }) => {
             <span className="truncate max-w-16">📍 {event.location.split(',')[0]}</span>
           </div>
 
-        {/* Streamlined Mobile Header */}
-        <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-4 pb-3">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-lg font-bold text-white">Discover</h1>
-            <div className="flex items-center gap-2">
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-bold">
-                {currentIndex + 1} of {events.length}
-              </span>
-              {user?.preferences.location && (
-                <div className="text-xs text-white/60 flex items-center gap-1">
-                  <span>📍</span>
-                  <span className="truncate max-w-20">{user.preferences.location.split(',')[0]}...</span>
-                </div>
-              )}
+          {/* Streamlined Mobile Header */}
+          <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-4 pb-3">
+            <div className="flex items-center justify-between mb-3">
+              <h1 className="text-lg font-bold text-white">Discover</h1>
+              <div className="flex items-center gap-2">
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                  {currentIndex + 1} of {events.length}
+                </span>
+                {user?.preferences.location && (
+                  <div className="text-xs text-white/60 flex items-center gap-1">
+                    <span>📍</span>
+                    <span className="truncate max-w-20">{user.preferences.location.split(',')[0]}...</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
