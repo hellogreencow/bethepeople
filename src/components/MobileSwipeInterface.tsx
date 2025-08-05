@@ -206,7 +206,7 @@ const MobileSwipeInterface: React.FC<MobileSwipeInterfaceProps> = ({
       </div>
 
       {/* Mobile Action Buttons - Larger for touch */}
-      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4 safe-area-inset-bottom rounded-t-2xl">
+      <div className="bg-white/10 backdrop-blur-xl border-t border-white/20 p-4 pb-safe rounded-t-2xl mt-4" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
         <div className="flex justify-center items-center space-x-8">
           {/* Skip Button - Larger */}
           <motion.button
