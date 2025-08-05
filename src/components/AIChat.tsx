@@ -341,26 +341,26 @@ Remember: You are NOT a general chatbot - you are a VOLUNTEER OPPORTUNITY SPECIA
           className="pointer-events-auto bg-gray-900 rounded-2xl shadow-2xl w-[95%] sm:w-[90%] max-w-3xl min-h-[50vh] max-h-[80vh] flex flex-col border border-white/20 overflow-hidden"
         >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-t-2xl">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-t-2xl">
           <div className="flex items-center space-x-3">
-            <div className="bg-white/20 rounded-full p-3">
-              <Bot className="h-6 w-6 text-white" />
+            <div className="bg-white/20 rounded-full p-2 md:p-3">
+              <Bot className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-lg">AI Volunteer Assistant</h3>
-              <p className="text-white/70 text-sm">Find your perfect match</p>
+              <h3 className="font-bold text-white text-base md:text-lg">AI Volunteer Assistant</h3>
+              <p className="text-white/70 text-xs md:text-sm">Find your perfect match</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-white/70 hover:text-white hover:bg-white/20 rounded-full p-3 transition-all"
+            className="text-white/70 hover:text-white hover:bg-white/20 rounded-full p-2 md:p-3 transition-all"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 md:h-6 md:w-6" />
           </button>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 md:space-y-4 min-h-0">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -375,17 +375,17 @@ Remember: You are NOT a general chatbot - you are a VOLUNTEER OPPORTUNITY SPECIA
                     : 'bg-gray-700 border border-white/20'
                 }`}>
                   {message.role === 'user' ? (
-                    <User className="h-5 w-5 text-white" />
+                    <User className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   ) : (
-                    <Bot className="h-5 w-5 text-white" />
+                    <Bot className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   )}
                 </div>
-                <div className={`rounded-2xl px-5 py-3 ${
+                <div className={`rounded-2xl px-3 py-2 md:px-5 md:py-3 ${
                   message.role === 'user'
                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                     : 'bg-gray-800 text-white border border-white/20'
                 }`}>
-                  <p className="text-base leading-relaxed whitespace-pre-wrap">
+                  <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
                     {parseMarkdown(message.content)}
                   </p>
                   <p className={`text-xs mt-2 ${
@@ -408,9 +408,9 @@ Remember: You are NOT a general chatbot - you are a VOLUNTEER OPPORTUNITY SPECIA
             <div className="flex justify-start">
               <div className="flex items-start space-x-3">
                 <div className="bg-gray-800 rounded-full p-3 border border-white/20">
-                  <Bot className="h-5 w-5 text-white animate-pulse" />
+                  <Bot className="h-4 w-4 md:h-5 md:w-5 text-white animate-pulse" />
                 </div>
-                <div className="bg-gray-800 rounded-2xl px-5 py-3 border border-white/20">
+                <div className="bg-gray-800 rounded-2xl px-3 py-2 md:px-5 md:py-3 border border-white/20">
                   <div className="flex space-x-1">
                     <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -425,7 +425,7 @@ Remember: You are NOT a general chatbot - you are a VOLUNTEER OPPORTUNITY SPECIA
 
         {/* Input */}
         <div className="border-t border-white/20 p-4 bg-gray-800 rounded-b-2xl flex-shrink-0">
-          <div className="flex space-x-3">
+          <div className="flex space-x-2 md:space-x-3">
             <input
               ref={inputRef}
               type="text"
@@ -433,15 +433,15 @@ Remember: You are NOT a general chatbot - you are a VOLUNTEER OPPORTUNITY SPECIA
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask me about volunteering..."
-              className="flex-1 px-5 py-3 bg-gray-700 border border-white/20 rounded-full focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-white/50"
+              className="flex-1 px-3 py-2 md:px-5 md:py-3 bg-gray-700 border border-white/20 rounded-full focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-white/50 text-sm md:text-base"
               disabled={isLoading || !openai}
             />
             <button
               onClick={sendMessage}
               disabled={!inputValue.trim() || isLoading || !openai}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full p-3 hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full p-2 md:p-3 hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              <Send className="h-5 w-5" />
+              <Send className="h-4 w-4 md:h-5 md:w-5" />
             </button>
           </div>
           
