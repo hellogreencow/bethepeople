@@ -380,12 +380,19 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                   
                   {/* Location Toggle */}
                   {user?.preferences.location && (
-                    <div className="flex items-center gap-1 text-white/60 bg-white/10 px-3 py-1 rounded-full">
+                   <button 
+                     onClick={() => {
+                       setTempLocation(user.preferences.location);
+                       setTempCoordinates(user.coordinates);
+                       setShowLocationSettings(true);
+                     }}
+                     className="flex items-center gap-1 text-white/60 bg-white/10 px-2 py-1 rounded-full hover:bg-white/20 active:scale-95 transition-all"
+                   >
                       <MapPin className="h-3 w-3" />
                       <span className="text-xs font-medium">
                         {user.preferences.location.split(',')[0]}
                       </span>
-                    </div>
+                   </button>
                   )}
                 </div>
               </div>
