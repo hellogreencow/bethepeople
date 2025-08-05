@@ -294,19 +294,21 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
         <div className="container mx-auto px-4 py-4">
           {/* Streamlined Mobile Header */}
           {isMobile && (
-            <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 p-3 mb-4">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 mb-4 mx-2">
               {/* Streamlined User Greeting */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold text-white leading-tight">
-                      Hey<br/>{user?.name || 'Demo User'}!
-                    </h2>
-                    <span className="text-lg">👋</span>
-                  </div>
-                  
-                  {/* Inline Stats */}
-                  <div className="flex items-center gap-3">
+              <div className="space-y-3">
+                {/* Horizontal Greeting */}
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-white">
+                    Hey {user?.name || 'Demo User'}! 
+                  </h2>
+                  <span className="text-xl">👋</span>
+                </div>
+                
+                {/* Stats and Location Row */}
+                <div className="flex items-center justify-between">
+                  {/* Stats Row */}
+                  <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
                       <Flame className="h-4 w-4 text-orange-400" />
                       <span className="text-white font-bold text-sm">{user?.stats.streak || 3}</span>
@@ -320,17 +322,17 @@ const Feed: React.FC<FeedProps> = ({ onOpenAIChat }) => {
                       <span className="text-white font-bold text-sm">{user?.stats.matches || 12}</span>
                     </div>
                   </div>
+                  
+                  {/* Location Toggle */}
+                  {user?.preferences.location && (
+                    <div className="flex items-center gap-1 text-white/60 bg-white/10 px-3 py-1 rounded-full">
+                      <MapPin className="h-3 w-3" />
+                      <span className="text-xs font-medium">
+                        {user.preferences.location.split(',')[0]}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                
-                {/* Location Toggle */}
-                {user?.preferences.location && (
-                  <div className="flex items-center gap-1 text-white/60 bg-white/10 px-2 py-1 rounded-full">
-                    <MapPin className="h-3 w-3" />
-                    <span className="text-xs font-medium">
-                      {user.preferences.location.split(',')[0]}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           )}
